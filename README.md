@@ -65,20 +65,7 @@ AMBA - open standard on how to connect and manage blocks on an SoC
 
 Before starting to code we have to understand how our code will run.
 
-A good place to start is to figure out what the hardware does right after it gets powered up. Based on the [pseudo code](#Reset-behaviour) found under 'Reset behaviour' in the [Armv7M architecture guide](https://developer.arm.com/documentation#f[navigationhierarchiescontenttype]=Architecture%20Document&cf[navigationhierarchiesproducts]=Architectures,CPU%20Architecture,M-Profile) (which is the architecture the M3 processor implements) the following things happen:
-
-1. Execution mode is set to Thread mode.
-2. PRIMASK, FAULTMASK and BASEPRI registers are set to 0, effectively enabling all exceptions and interrupts.
-3. SPSEL and nPRIV bit of the CONTROL register are set to 0, which means privileged execution and using MSP as the stack pointer.
-4. All exceptions are deactivated.
-5. SCS are reset.
-6. R0-R12 are set to an arbitrary value.
-7. VTOR is set to 0.
-8. MSP is initialized with the first entry in the vector table.
-9. APSR is set to a random number
-10. IPSR is set to 0.
-11. EPSR.T is set to bit[0] of 2nd entry of the vector table
-12. Excecution branches to the 2nd entry of the vector table. (after setting bit[0] to 0)
+A good place to start at is to figure out what the hardware does right after it gets powered up. Based on the documentation the Reset Behaviour for our processor is this
 
 ## Linker Script
 
