@@ -3,7 +3,7 @@
 This project is created to understand all the steps involved in printing "hello" from an MCU via UART.
 The code will be developed outside of any IDE, only using VS Code as a text editor and some command line tools.
 
-This documentation will be updated as the project progresses and it's main purpose is to document everything I learn and hopefully it will serve as a complete, in-depth guide for others who want to understand how code gets executed on an MCU without hiding any details.
+This documentation will be updated as the project progresses and it's main purpose is to document everything I learn and hopefully it will serve as a guide for others who want to understand how code gets executed on an MCU.
 
 ## Overview
 
@@ -55,17 +55,24 @@ ISA - Instruction Set Architecture
 MPU - Memory Protection Unit  
 PPB - Private Peripheral Bus
 MCU - Micro Controller Unit
+SWD - Serial Wire Debug
 
 ## Definitions
 
 Harward architecture - Seperate buses for instruction and data  
 AMBA - open standard on how to connect and manage blocks on an SoC
 
-## Getting to know our Hardware
+## Getting to know the hardware
 
-Before starting to code we have to understand how our code will run.
+Before writing any code we need to understand how exactly our hardware works. This requires some basic familiarity with embedded systems, processors, digital electronics and going through the user manuals. I will assume that the reader is familiar with concepts like memory-map, memory-mapped registers, fetch-decode-execute cycle and core registers.
 
-A good place to start at is to figure out what the hardware does right after it gets powered up. Based on the documentation the Reset Behaviour for our processor is this
+Normally after reset the processor will initialize some core and peripheral registers and start the execution from the memory address stored in the PC register. This happens automatically by the digital circuits in the processor before any machine code would take over. In our case the SP will be initialized by the first and the PC by the second entry of the vector table, which at startup should be at memory address 0x0000 0000.
+
+The MCU's memory map(which we find in the datasheet and reference manual) tells us at which addresses we can reach the Flash, system memory, SRAM and other memory regions. Flash starts at address 0x08000 0000 and is aliased to the boot space (which starts at 0x0000 0000). BOOT0 and BOOT1 pins of the MCU decide which memory region gets aliased to boot space but by defualt on our board it's the Flash. So by putting some value in 0x0800 0000 and 0x0800 0004 we can initialize the SP and tell the CPU from where it should execute the first instruction, effectively taking control.
+
+We can write C and assembly code, that we can compile with a toolchain to raw binary data, that we then write into the flash memory of the processor via a programmer device. The programmer can flash this raw binary data via directly accessing the SWD interface or if there is already a bootloader running on the hardware we can communicate with that via UART and other interfaces. The exact process depends on the MCU and should be documented. In our case the Nucleo board alraedy contains the ST-Link V2.1 programmer/debugger that handles this operation, powers the MCU and provides the clock signal as well. Meaning, that we can just connect the board to our development machine via the USB port and use a debugging tool that can communicate with the ST-Link like Ozone. (To use Ozone you need to flash the J-Link firmware on the ST-Link hardware first by following the instructions on their website).
+
+So now we know we can write the flash memory with a .bin file which will contain the machine code instructions and global data equivalent of the C program we wrote. We just need to make sure, that all the compiled binaries are placed correctly and that we initialize the SP and PC registers properly.
 
 ## Linker Script
 
