@@ -1,27 +1,36 @@
+#include "stdint.h"
 
 int main(void);
+
+// Symbols defined in linker.ld  
+extern uint32_t _sstack, _sbss, _ebss, _sdata, _edata, _sidata;
 
 // Startup code
 __attribute__((naked, noreturn)) void Reset_Handler(void) {
 
-  // memset .bss to zero, and copy .data section to RAM region
-  extern long _sbss, _ebss, _sdata, _edata, _sidata;
+  // init .bss section
+  for(uint32_t *src = &_sbss; src < &_ebss; src++)
+  {
+    *src = 0;
+  }
 
-  for (long *src = &_sbss; src < &_ebss; src++) *src = 0;
-  for (long *src = &_sdata, *dst = &_sidata; src < &_edata;) *src++ = *dst++;
+  // init .data section from flash
+  for(uint32_t *src = &_sdata, *dst = &_sidata; src < &_edata;) 
+  {
+    *src++ = *dst++;
+  }
 
-  main();             // Call main()
-  for (;;) (void) 0;  // Infinite loop in the case if main() returns
+  main();    // Call main()
+  while(1);  // Infinite loop in the case if main() returns
 }
 
 
-extern void _estack(void);  // Defined in link.ld
 
-// 16 standard and 43 STM32-specific handlers
-__attribute__((section(".vectors"))) void (*const tab[16 + 68])(void) = {
+// 16 standard and 68 STM32-specific handlers
+__attribute__((section(".vectors"))) uint32_t tab[16 + 68] = {
 
-    _estack,
-    Reset_Handler,
+    (uint32_t)&_sstack,
+    (uint32_t)Reset_Handler,
     0,  //NMI_Handler,
     0,  //HardFault_Handler,
     0,  //MemManage_Handler,
@@ -79,12 +88,21 @@ __attribute__((section(".vectors"))) void (*const tab[16 + 68])(void) = {
     0,  //EXTI15_10_IRQHandler,
     0,  //RTC_Alarm_IRQHandler,
     0,  //USBWakeUp_IRQHandler,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0  //BootRAM          /* @0x108. This is for boot in RAM mode for
+    0,  //TIM8_BRK_IRQHandler,
+    0,  //TIM8_UP_IRQHandler,
+    0,  //TIM8_TRG_COM_IRQHandler,
+    0,  //TIM8_CC_IRQHandler,
+    0,  //ADC3_IRQHandler,
+    0,  //FSMC_IRQHandler,
+    0,  //SDIO_IRQHandler,
+    0,  //TIM5_IRQHandler,
+    0,  //SPI3_IRQHandler,
+    0,  //UART4_IRQHandler,
+    0,  //UART5_IRQHandler,
+    0,  //TIM6_IRQHandler,
+    0,  //TIM7_IRQHandler,
+    0,  //DMA2_Channel1_IRQHandler,
+    0,  //DMA2_Channel2_IRQHandler,
+    0,  //DMA2_Channel3_IRQHandler,
+    0,  //DMA2_Channel4_5_IRQHandler,
 };
