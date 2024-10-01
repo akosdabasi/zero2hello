@@ -54,8 +54,12 @@ typedef struct{
 
 } RCC_TypeDef;
 
+
+
 //peripherals
 #define GPIOA   ((GPIO_TypeDef*)GPIOA_BASE_ADDR) 
 #define GPIOB   ((GPIO_TypeDef*)GPIOB_BASE_ADDR) 
 #define GPIOC   ((GPIO_TypeDef*)GPIOC_BASE_ADDR) 
 #define GPIOD   ((GPIO_TypeDef*)GPIOD_BASE_ADDR)
+
+#define RCC     ((RCC_TypeDef*)RCC_BASE_ADDR)

@@ -130,12 +130,12 @@ stflash: $(BIN)
 	st-flash --reset write $< $(FLASH_ADDRESS)
 
 # flashing if the programmer runs jlink firmware
-jflash: $(SCRIPT_DIR)/flash_script.jlink
+jflash: flash_script.jlink
 	@echo "flashing with jlink..."
-	JLinkExe -commanderscript $<
+	JLinkExe -CommanderScript flash_script.jlink
 
 # Create the J-Link script file
-$(SCRIPT_DIR)/flash_script.jlink: $(BIN)
+flash_script.jlink: $(BIN)
 	@touch $@
 	@echo "device $(DEVICE)" > $@
 	@echo "if $(INTERFACE)" >> $@
