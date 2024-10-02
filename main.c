@@ -1,6 +1,10 @@
 #include "l_gpio.h"
+#include "l_clk_cfg.h"
 
+#define TICK_MS 1  //system tick period in ms
 int main(void) {
+
+  systick_init(TICK_MS);
 
   GPIO_PinConfig_t pin_cfg;
   pin_cfg.mode = MODE_OUT_2;
@@ -12,8 +16,7 @@ int main(void) {
 
   while(1)
   {
-    uint32_t delay = 100000;
-    while(delay--);
+    delay_ms(2000);
     gpio_toggle_pin(GPIOA, 5);
   }
 

@@ -1,6 +1,7 @@
 #include "stdint.h"
 
 int main(void);
+void SysTick_Handler(void);
 
 // Symbols defined in linker.ld  
 extern uint32_t _sstack, _sbss, _ebss, _sdata, _edata, _sidata;
@@ -44,7 +45,7 @@ __attribute__((section(".vectors"))) uint32_t tab[16 + 68] = {
     0,  //DebugMon_Handler,
     0,
     0,  //PendSV_Handler,
-    0,  //SysTick_Handler,
+    (uint32_t)SysTick_Handler,
     0,  //WWDG_IRQHandler,
     0,  //PVD_IRQHandler,
     0,  //TAMPER_IRQHandler,
