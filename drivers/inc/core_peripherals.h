@@ -1,6 +1,6 @@
 #pragma once
 
-#include "l_stdint.h"
+#include "utils.h"
 
 
 /*core peripheral structure definitions*/

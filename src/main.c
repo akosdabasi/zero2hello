@@ -1,5 +1,5 @@
-#include "l_gpio.h"
-#include "l_clk_cfg.h"
+#include "gpio_driver.h"
+#include "clock_driver.h"
 
 #define TICK_MS 1  //system tick period in ms
 int main(void) 

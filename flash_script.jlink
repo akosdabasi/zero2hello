@@ -1,7 +1,0 @@
-device STM32F103RB            
-if SWD                 
-speed 4000                    
-loadbin build/bin/hello.bin 0x08000000      
-r
-g
-qc

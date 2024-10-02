@@ -1,6 +1,6 @@
-#include "l_clk_cfg.h"
-#include "l_core.h"
-#include "l_utils.h"
+#include "clock_driver.h"
+#include "core_peripherals.h"
+#include "utils.h"
 
 //Globals
 volatile uint32_t ticks = 0;

@@ -3,7 +3,7 @@
 * description: contains memory, bus domain and perihperal base address definitions 
 */
 
-#include "l_stdint.h"
+#include "utils.h"
 
 //memory base addresses
 #define SRAM_BASE_ADDR    0x20000000U

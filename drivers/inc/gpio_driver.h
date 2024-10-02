@@ -1,5 +1,5 @@
-#include "l_utils.h"
-#include "l_stm32f103rb.h"
+#include "utils.h"
+#include "mcu_peripherals.h"
 
 
 #define PULLDOWN  0 
@@ -22,25 +22,6 @@
 #define MODE_OUT_GP_OD          (1U << 2)
 #define MODE_OUT_ALT_PP         (2U << 2)
 #define MODE_OUT_ALT_OD         (3U << 2)
-
-
-
-typedef enum {
-  gpio_input,
-  gpio_input_pu,    //pull-up
-  gpio_input_pd,    //pull-down
-  gpio_analog,
-  gpio_output_od,   //open-drain
-  gpio_output_pp,   //push-pull
-  gpio_alt_pp,      //alternate function push-pull
-  gpio_alt_od       //alternate function open-drain
-} gpio_mode_t;
-
-typedef enum {
-  gpio_2mhz,
-  gpio_10mhz,
-  gpio_50mhz
-} gpio_speed_t;
 
 typedef enum {
   pin0,
