@@ -68,12 +68,12 @@ typedef struct{
   uint8_t pupd; 
 } GPIO_PinConfig_t;
 
-void gpio_clk_enable(GPIO_TypeDef* const pGPIO);
-void gpio_clk_disable(GPIO_TypeDef* const pGPIO);
+void gpio_clk_enable(GPIO_t* const pGPIO);
+void gpio_clk_disable(GPIO_t* const pGPIO);
 void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg);
-void gpio_set_mode(GPIO_TypeDef* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg);
-uint8_t gpio_read_pin(GPIO_TypeDef* const pGPIO, gpio_pin_t pin);
-uint16_t gpio_read_port(GPIO_TypeDef* const pGPIO);
-void gpio_write_pin(GPIO_TypeDef* const pGPIO, gpio_pin_t pin, uint8_t value);
-void gpio_write_port(GPIO_TypeDef* const pGPIO, uint16_t value);
-void gpio_toggle_pin(GPIO_TypeDef* const pGPIO, gpio_pin_t pin);
+void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg);
+uint8_t gpio_read_pin(GPIO_t* const pGPIO, gpio_pin_t pin);
+uint16_t gpio_read_port(GPIO_t* const pGPIO);
+void gpio_write_pin(GPIO_t* const pGPIO, gpio_pin_t pin, uint8_t value);
+void gpio_write_port(GPIO_t* const pGPIO, uint16_t value);
+void gpio_toggle_pin(GPIO_t* const pGPIO, gpio_pin_t pin);

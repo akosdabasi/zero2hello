@@ -1,6 +1,6 @@
 #include "l_gpio.h"
 
-void gpio_clk_enable(GPIO_TypeDef* const pGPIO)
+void gpio_clk_enable(GPIO_t* const pGPIO)
 {
   if(pGPIO == GPIOA)
   {
@@ -25,7 +25,7 @@ void gpio_clk_enable(GPIO_TypeDef* const pGPIO)
   
 }
 
-void gpio_clk_disable(GPIO_TypeDef* const pGPIO)
+void gpio_clk_disable(GPIO_t* const pGPIO)
 {
   if(pGPIO == GPIOA)
   {
@@ -56,7 +56,7 @@ void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg)
   pCfg->pupd = PULLDOWN; //only relevant if mode is input
 }
 
-void gpio_set_mode(GPIO_TypeDef* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
+void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
 {
   uint8_t reg_idx = pin / 8;
   uint8_t pos = pin % 8;
@@ -78,17 +78,17 @@ void gpio_set_mode(GPIO_TypeDef* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *
   }
 }
 
-uint8_t gpio_read_pin(GPIO_TypeDef* const pGPIO, gpio_pin_t pin)
+uint8_t gpio_read_pin(GPIO_t* const pGPIO, gpio_pin_t pin)
 {
   return (uint8_t)GETBIT(pGPIO->IDR,pin);
 }
 
-uint16_t gpio_read_port(GPIO_TypeDef* const pGPIO)
+uint16_t gpio_read_port(GPIO_t* const pGPIO)
 {
   return (uint16_t)pGPIO->IDR;
 }
 
-void gpio_write_pin(GPIO_TypeDef* const pGPIO, gpio_pin_t pin, uint8_t value)
+void gpio_write_pin(GPIO_t* const pGPIO, gpio_pin_t pin, uint8_t value)
 {
   if(value == HIGH)
   {
@@ -100,12 +100,12 @@ void gpio_write_pin(GPIO_TypeDef* const pGPIO, gpio_pin_t pin, uint8_t value)
   }
 }
 
-void gpio_write_port(GPIO_TypeDef* const pGPIO, uint16_t value)
+void gpio_write_port(GPIO_t* const pGPIO, uint16_t value)
 {
   pGPIO->ODR = (uint32_t)value;
 }
 
-void gpio_toggle_pin(GPIO_TypeDef* const pGPIO, gpio_pin_t pin)
+void gpio_toggle_pin(GPIO_t* const pGPIO, gpio_pin_t pin)
 {
   if(GETBIT(pGPIO->ODR, pin) == LOW)
   {

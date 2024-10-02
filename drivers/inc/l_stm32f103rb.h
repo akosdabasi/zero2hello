@@ -38,7 +38,7 @@ typedef struct{
     __vo uint32_t BRR;
     __vo uint32_t LCKR;
 
-}GPIO_TypeDef;
+} GPIO_t;
 
 typedef struct{
     __vo uint32_t CR;
@@ -52,14 +52,14 @@ typedef struct{
     __vo uint32_t BDCR;
     __vo uint32_t CSR;
 
-} RCC_TypeDef;
+} RCC_t;
 
 
 
 //peripherals
-#define GPIOA   ((GPIO_TypeDef*)GPIOA_BASE_ADDR) 
-#define GPIOB   ((GPIO_TypeDef*)GPIOB_BASE_ADDR) 
-#define GPIOC   ((GPIO_TypeDef*)GPIOC_BASE_ADDR) 
-#define GPIOD   ((GPIO_TypeDef*)GPIOD_BASE_ADDR)
+#define GPIOA   ((GPIO_t*)GPIOA_BASE_ADDR) 
+#define GPIOB   ((GPIO_t*)GPIOB_BASE_ADDR) 
+#define GPIOC   ((GPIO_t*)GPIOC_BASE_ADDR) 
+#define GPIOD   ((GPIO_t*)GPIOD_BASE_ADDR)
 
-#define RCC     ((RCC_TypeDef*)RCC_BASE_ADDR)
+#define RCC     ((RCC_t*)RCC_BASE_ADDR)
