@@ -51,9 +51,9 @@ void gpio_clk_disable(GPIO_t* const pGPIO)
 
 void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg)
 {
-  pCfg->mode = MODE_OUT_2;
-  pCfg->sub_mode = MODE_OUT_GP_PP;
-  pCfg->pupd = PULLDOWN; //only relevant if mode is input
+  pCfg->mode = MODE_IN;
+  pCfg->sub_mode = SUBMODE_IN_FLOAT;
+  pCfg->pupd = NO_PUPD; //only relevant if submode is SUBMODE_IN_PUPD
 }
 
 void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
@@ -62,18 +62,23 @@ void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
   uint8_t pos = pin % 8;
   uint32_t bits = pCfg->mode | pCfg->sub_mode;
 
-  pGPIO->CR[reg_idx] &= ~(0b1111u << (pos*4));
-  pGPIO->CR[reg_idx] |= (bits << (pos*4));
+  pGPIO->CR[reg_idx] &= ~(0b1111u << (pos*4));  //clearing mode bits
+  pGPIO->CR[reg_idx] |= (bits << (pos*4));      //setting mode bits
 
-  if(pCfg->mode == MODE_IN && pCfg->sub_mode == MODE_IN_PP)
+  //Activate pullup or pulldown resistor if we are in input pullup-pulldown mode
+  if(pCfg->mode == MODE_IN && pCfg->sub_mode == SUBMODE_IN_PUPD)
   {
-    if(pCfg->pupd)
+    if(pCfg->pupd == PULLUP)
     {
       SET_BIT(pGPIO->ODR, pin); 
     }
-    else 
+    else if(pCfg->pupd == PULLDOWN)
     {
       CLEAR_BIT(pGPIO->ODR, pin);
+    }
+    else
+    {
+      //error handling
     }
   }
 }

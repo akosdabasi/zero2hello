@@ -2,24 +2,27 @@
 #include "mcu_peripherals.h"
 
 
-#define PULLDOWN  0 
-#define PULLUP    1
+#define PULLDOWN  0u 
+#define PULLUP    1u
+#define NO_PUPD   2u
 
 //Modes 
-#define MODE_IN                    0U
-#define MODE_OUT_2                 2U
-#define MODE_OUT_10                1U
-#define MODE_OUT_50                3U
+#define MODE_IN                    0b00u
+#define MODE_OUT_10                0b01u
+#define MODE_OUT_2                 0b10u
+#define MODE_OUT_50                0b11u
 
-//Sub-modes
-#define MODE_IN_ANALOG          (0U << 2)
-#define MODE_IN_FLOAT           (1U << 2)
-#define MODE_IN_PP              (2U << 2)
+//Sub-modes 
+#define SUBMODE_POS                2u
 
-#define MODE_OUT_GP_PP          (0U << 2)
-#define MODE_OUT_GP_OD          (1U << 2)
-#define MODE_OUT_ALT_PP         (2U << 2)
-#define MODE_OUT_ALT_OD         (3U << 2)
+#define SUBMODE_IN_ANALOG          (0b00u << SUBMODE_POS)
+#define SUBMODE_IN_FLOAT           (0b01u << SUBMODE_POS)
+#define SUBMODE_IN_PUPD            (0b10u << SUBMODE_POS)
+
+#define SUBMODE_OUT_GP_PP          (0b00u << SUBMODE_POS)
+#define SUBMODE_OUT_GP_OD          (0b01u << SUBMODE_POS)
+#define SUBMODE_OUT_ALT_PP         (0b10u << SUBMODE_POS)
+#define SUBMODE_OUT_ALT_OD         (0b11u << SUBMODE_POS)
 
 typedef enum {
   pin0,
@@ -47,12 +50,12 @@ typedef struct{
   uint8_t pupd; 
 } GPIO_PinConfig_t;
 
-void gpio_clk_enable(GPIO_t* const pGPIO);
-void gpio_clk_disable(GPIO_t* const pGPIO);
+void gpio_clk_enable(GPIO_t *const pGPIO);
+void gpio_clk_disable(GPIO_t *const pGPIO);
 void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg);
-void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg);
-uint8_t gpio_read_pin(GPIO_t* const pGPIO, gpio_pin_t pin);
-uint16_t gpio_read_port(GPIO_t* const pGPIO);
-void gpio_write_pin(GPIO_t* const pGPIO, gpio_pin_t pin, uint8_t value);
-void gpio_write_port(GPIO_t* const pGPIO, uint16_t value);
-void gpio_toggle_pin(GPIO_t* const pGPIO, gpio_pin_t pin);
+void gpio_set_mode(GPIO_t *const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg);
+uint8_t gpio_read_pin(GPIO_t *const pGPIO, gpio_pin_t pin);
+uint16_t gpio_read_port(GPIO_t *const pGPIO);
+void gpio_write_pin(GPIO_t *const pGPIO, gpio_pin_t pin, uint8_t value);
+void gpio_write_port(GPIO_t *const pGPIO, uint16_t value);
+void gpio_toggle_pin(GPIO_t *const pGPIO, gpio_pin_t pin);
