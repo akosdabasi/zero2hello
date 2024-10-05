@@ -4,11 +4,17 @@
 * file: nvic.h
 * description: low level driver layer for the Nested Vector Interrupt Controller (NVIC) of the Cortex M3 processor
 * contains:
+*     - NVIC configuration parameters
+*     - type defintions related to exception handling
+*     - Exception handling functions
 */
 
 #include "core_cm3.h"
+#include "utils.h"
 
-/* -------------------------  Interrupt Number Definition  ------------------------ */
+//NVIC configuration
+#define __NVIC_PRIO_BITS  4  //number of priority bit the MCU implements
+
 
 typedef enum
 {
@@ -40,14 +46,10 @@ typedef enum
 
 #define NVIC_USER_IRQ_OFFSET          16
 
-
 /* The following EXC_RETURN values are saved the LR on exception entry */
 #define EXC_RETURN_HANDLER         (0xFFFFFFF1UL)     /* return to Handler mode, uses MSP after return                               */
 #define EXC_RETURN_THREAD_MSP      (0xFFFFFFF9UL)     /* return to Thread mode, uses MSP after return                                */
 #define EXC_RETURN_THREAD_PSP      (0xFFFFFFFDUL)     /* return to Thread mode, uses PSP after return                                */
-
-
-
 
 
 /**
@@ -67,11 +69,10 @@ static inline void __NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
   reg_value  =  SCB->AIRCR;                                                   /* read old register configuration    */
   reg_value &= ~((uint32_t)(SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_PRIGROUP_Msk)); /* clear bits to change               */
   reg_value  =  (reg_value                                   |
-                ((uint32_t)0x5FAUL << SCB_AIRCR_VECTKEY_Pos) |
+                ((uint32_t)VECTKEY << SCB_AIRCR_VECTKEY_Pos) |
                 (PriorityGroupTmp << SCB_AIRCR_PRIGROUP_Pos)  );              /* Insert write key and priority group */
   SCB->AIRCR =  reg_value;
 }
-
 
 /**
   \brief   Get Priority Grouping
@@ -218,7 +219,7 @@ static inline uint32_t __NVIC_GetActive(IRQn_t IRQn)
   \param [in]  priority  Priority to set.
   \note    The priority cannot be set for every processor exception.
  */
-#define __NVIC_PRIO_BITS 4
+
 static inline void __NVIC_SetPriority(IRQn_t IRQn, uint32_t priority)
 {
   if ((int32_t)(IRQn) >= 0)
@@ -254,68 +255,6 @@ static inline uint32_t __NVIC_GetPriority(IRQn_t IRQn)
   }
 }
 
-
-/*
-  \brief   Encode Priority
-  \details Encodes the priority for an interrupt with the given priority group,
-           preemptive priority value, and subpriority value.
-           In case of a conflict between priority grouping and available
-           priority bits (__NVIC_PRIO_BITS), the smallest possible priority group is set.
-  \param [in]     PriorityGroup  Used priority group.
-  \param [in]   PreemptPriority  Preemptive priority value (starting from 0).
-  \param [in]       SubPriority  Subpriority value (starting from 0).
-  \return                        Encoded priority. Value can be used in the function \ref NVIC_SetPriority().
- */
-static inline uint32_t NVIC_EncodePriority (uint32_t PriorityGroup, uint32_t PreemptPriority, uint32_t SubPriority)
-{
-  uint32_t PriorityGroupTmp = (PriorityGroup & (uint32_t)0x07UL);   /* only values 0..7 are used          */
-  uint32_t PreemptPriorityBits;
-  uint32_t SubPriorityBits;
-
-  PreemptPriorityBits = ((7UL - PriorityGroupTmp) > (uint32_t)(__NVIC_PRIO_BITS)) ? (uint32_t)(__NVIC_PRIO_BITS) : (uint32_t)(7UL - PriorityGroupTmp);
-  SubPriorityBits     = ((PriorityGroupTmp + (uint32_t)(__NVIC_PRIO_BITS)) < (uint32_t)7UL) ? (uint32_t)0UL : (uint32_t)((PriorityGroupTmp - 7UL) + (uint32_t)(__NVIC_PRIO_BITS));
-
-  return (
-           ((PreemptPriority & (uint32_t)((1UL << (PreemptPriorityBits)) - 1UL)) << SubPriorityBits) |
-           ((SubPriority     & (uint32_t)((1UL << (SubPriorityBits    )) - 1UL)))
-         );
-}
-
-
-/**
-  \brief   Decode Priority
-  \details Decodes an interrupt priority value with a given priority group to
-           preemptive priority value and subpriority value.
-           In case of a conflict between priority grouping and available
-           priority bits (__NVIC_PRIO_BITS) the smallest possible priority group is set.
-  \param [in]         Priority   Priority value, which can be retrieved with the function \ref NVIC_GetPriority().
-  \param [in]     PriorityGroup  Used priority group.
-  \param [out] pPreemptPriority  Preemptive priority value (starting from 0).
-  \param [out]     pSubPriority  Subpriority value (starting from 0).
- */
-static inline void NVIC_DecodePriority (uint32_t Priority, uint32_t PriorityGroup, uint32_t* const pPreemptPriority, uint32_t* const pSubPriority)
-{
-  uint32_t PriorityGroupTmp = (PriorityGroup & (uint32_t)0x07UL);   /* only values 0..7 are used          */
-  uint32_t PreemptPriorityBits;
-  uint32_t SubPriorityBits;
-
-  PreemptPriorityBits = ((7UL - PriorityGroupTmp) > (uint32_t)(__NVIC_PRIO_BITS)) ? (uint32_t)(__NVIC_PRIO_BITS) : (uint32_t)(7UL - PriorityGroupTmp);
-  SubPriorityBits     = ((PriorityGroupTmp + (uint32_t)(__NVIC_PRIO_BITS)) < (uint32_t)7UL) ? (uint32_t)0UL : (uint32_t)((PriorityGroupTmp - 7UL) + (uint32_t)(__NVIC_PRIO_BITS));
-
-  *pPreemptPriority = (Priority >> SubPriorityBits) & (uint32_t)((1UL << (PreemptPriorityBits)) - 1UL);
-  *pSubPriority     = (Priority                   ) & (uint32_t)((1UL << (SubPriorityBits    )) - 1UL);
-}
-
-
-/**
-  \brief   Set Interrupt Vector
-  \details Sets an interrupt vector in SRAM based interrupt vector table.
-           The interrupt number can be positive to specify a device specific interrupt,
-           or negative to specify a processor exception.
-           VTOR must been relocated to SRAM before.
-  \param [in]   IRQn      Interrupt number
-  \param [in]   vector    Address of interrupt handler function
- */
 static inline void __NVIC_SetVector(IRQn_t IRQn, uint32_t vector)
 {
   uint32_t *vectors = (uint32_t *)SCB->VTOR;

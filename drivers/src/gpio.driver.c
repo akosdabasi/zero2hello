@@ -4,19 +4,19 @@ void gpio_clk_enable(GPIO_t* const pGPIO)
 {
   if(pGPIO == GPIOA)
   {
-    SETBIT(RCC->APB2ENR, 2);
+    SET_BIT(RCC->APB2ENR, 2);
   }
   else if(pGPIO == GPIOB)
   {
-    SETBIT(RCC->APB2ENR, 3);
+    SET_BIT(RCC->APB2ENR, 3);
   }
   else if(pGPIO == GPIOC)
   {
-    SETBIT(RCC->APB2ENR, 4);
+    SET_BIT(RCC->APB2ENR, 4);
   }
   else if(pGPIO == GPIOD)
   {
-    SETBIT(RCC->APB2ENR, 5);
+    SET_BIT(RCC->APB2ENR, 5);
   }
   else
   {
@@ -29,19 +29,19 @@ void gpio_clk_disable(GPIO_t* const pGPIO)
 {
   if(pGPIO == GPIOA)
   {
-    CLEARBIT(RCC->APB2ENR, 2);
+    CLEAR_BIT(RCC->APB2ENR, 2);
   }
   else if(pGPIO == GPIOB)
   {
-    CLEARBIT(RCC->APB2ENR, 3);
+    CLEAR_BIT(RCC->APB2ENR, 3);
   }
   else if(pGPIO == GPIOC)
   {
-    CLEARBIT(RCC->APB2ENR, 4);
+    CLEAR_BIT(RCC->APB2ENR, 4);
   }
   else if(pGPIO == GPIOD)
   {
-    CLEARBIT(RCC->APB2ENR, 5);
+    CLEAR_BIT(RCC->APB2ENR, 5);
   }
   else
   {
@@ -69,18 +69,18 @@ void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
   {
     if(pCfg->pupd)
     {
-      SETBIT(pGPIO->ODR, pin); 
+      SET_BIT(pGPIO->ODR, pin); 
     }
     else 
     {
-      CLEARBIT(pGPIO->ODR, pin);
+      CLEAR_BIT(pGPIO->ODR, pin);
     }
   }
 }
 
 uint8_t gpio_read_pin(GPIO_t* const pGPIO, gpio_pin_t pin)
 {
-  return (uint8_t)GETBIT(pGPIO->IDR,pin);
+  return (uint8_t)GET_BIT(pGPIO->IDR,pin);
 }
 
 uint16_t gpio_read_port(GPIO_t* const pGPIO)
@@ -107,7 +107,7 @@ void gpio_write_port(GPIO_t* const pGPIO, uint16_t value)
 
 void gpio_toggle_pin(GPIO_t* const pGPIO, gpio_pin_t pin)
 {
-  if(GETBIT(pGPIO->ODR, pin) == LOW)
+  if(GET_BIT(pGPIO->ODR, pin) == LOW)
   {
     pGPIO->BSRR = (1u << pin);
   }

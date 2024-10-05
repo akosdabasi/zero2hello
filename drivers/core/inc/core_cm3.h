@@ -12,6 +12,9 @@
 
 #include "utils.h"
 
+// constants
+
+#define VECTKEY   0xFA05u
 /*******************************************************************************
 *                 Register Abstraction
 * Registers contain:
@@ -436,16 +439,86 @@ typedef struct
 
 
 /*Assembly instruction macros*/
+//isb: all subsequent instructions have to wait until previous instructions are executed
+//dsb: ensures that memory writes are fully completed and visible before continuing with subsequent instructions
+//dmb: ensures that previous memory accesses are observed before proceeding (not neccesarily completed)
+//memory clobber: tells the compiler that the assembly instructions may affect memory
 
+// No Operation (NOP): Does nothing, often used for timing or synchronization(consumes 1 instruction cycle).
+#define __NOP() __asm volatile ("nop")
 
-// Macro for Instruction Synchronization Barrier (ISB)
+// Wait For Interrupt (WFI): Puts the processor in low-power mode until an interrupt occurs.
+#define __WFI() __asm volatile ("wfi")
+
+// Wait For Event (WFE): Waits for an event or interrupt to resume execution.
+#define __WFE() __asm volatile ("wfe")
+
+// Send Event (SEV): Sends an event signal, typically used to wake up cores waiting on WFE.
+#define __SEV() __asm volatile ("sev")
+
+// Instruction Synchronization Barrier (ISB): Flushes the pipeline, ensuring previous instructions are completed.
 #define __ISB() __asm volatile ("isb" : : : "memory")
 
-// Macro for Data Synchronization Barrier (DSB)
+// Data Synchronization Barrier (DSB): Ensures memory operations are complete before continuing.
 #define __DSB() __asm volatile ("dsb" : : : "memory")
 
-// Macro for Data Memory Barrier (DMB)
+// Data Memory Barrier (DMB): Ensures the correct ordering of memory accesses across the barrier.
 #define __DMB() __asm volatile ("dmb" : : : "memory")
 
-// Macro for No Operation (NOP)
-#define __NOP() __asm volatile ("nop")
+// Supervisor Call (SVC): Triggers a software interrupt (system call) with a specified value.
+#define __SVC(value) __asm volatile ("svc %0" : : "I"(value))
+
+// Break Point (BKPT): Inserts a breakpoint, useful for debugging.
+#define __BKPT(value) __asm volatile ("bkpt %0" : : "I"(value))
+
+// Branch to Link Register (BX LR): Explicitly returns from a subroutine by branching to the link register.
+#define __BX_LR() __asm volatile ("bx lr")
+
+// Yield (YIELD): Hints the processor to switch to another task or core.
+#define __YIELD() __asm volatile ("yield")
+
+// Enable Interrupts (CPSIE I): Enables all maskable interrupts.
+#define __ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
+
+// Disable Interrupts (CPSID I): Disables all maskable interrupts.
+#define __DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
+
+// Set Priority Mask (MSR PRIMASK): Disables all configurable exceptions.
+#define __SET_PRIMASK(value) __asm volatile ("msr primask, %0" : : "r"(value))
+
+// Get Priority Mask (MRS PRIMASK): Gets the current PRIMASK value to check if interrupts are masked.
+#define __GET_PRIMASK() ({ \
+    uint32_t primask; \
+    __asm volatile ("mrs %0, primask" : "=r"(primask) ); \
+    primask; \
+})
+
+// Set Base Priority (MSR BASEPRI): Sets the base priority register to control exception priority.
+#define __SET_BASEPRI(value) __asm volatile ("msr basepri, %0" : : "r"(value))
+
+// Get Base Priority (MRS BASEPRI): Reads the current base priority value.
+#define __GET_BASEPRI() ({ \
+    uint32_t basepri; \
+    __asm volatile ("mrs %0, basepri" : "=r"(basepri) ); \
+    basepri; \
+})
+
+// Set Fault Mask (MSR FAULTMASK): Disables all exceptions except NMI and HardFault.
+#define __SET_FAULTMASK(value) __asm volatile ("msr faultmask, %0" : : "r"(value))
+
+// Get Fault Mask (MRS FAULTMASK): Reads the current fault mask value.
+#define __GET_FAULTMASK() ({ \
+    uint32_t faultmask; \
+    __asm volatile ("mrs %0, faultmask" : "=r"(faultmask) ); \
+    faultmask; \
+})
+
+// Set Control Register (MSR CONTROL): Sets the CONTROL register, which controls privilege level and stack mode.
+#define __SET_CONTROL(value) __asm volatile ("msr control, %0" : : "r"(value))
+
+// Get Control Register (MRS CONTROL): Reads the current CONTROL register value.
+#define __GET_CONTROL() ({ \
+    uint32_t control; \
+    __asm volatile ("mrs %0, control" : "=r"(control) ); \
+    control; \
+})

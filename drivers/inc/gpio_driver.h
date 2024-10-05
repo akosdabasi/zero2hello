@@ -5,8 +5,6 @@
 #define PULLDOWN  0 
 #define PULLUP    1
 
-#define LOW   0
-#define HIGH  1
 //Modes 
 #define MODE_IN                    0U
 #define MODE_OUT_2                 2U
