@@ -1,6 +1,7 @@
+#pragma once
+
 #include "utils.h"
 #include "mcu_peripherals.h"
-
 
 #define PULLDOWN  0u 
 #define PULLUP    1u
@@ -52,6 +53,7 @@ typedef struct{
 
 void gpio_clk_enable(GPIO_t *const pGPIO);
 void gpio_clk_disable(GPIO_t *const pGPIO);
+void gpio_clk_reset(GPIO_t *const pGPIO);
 void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg);
 void gpio_set_mode(GPIO_t *const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg);
 uint8_t gpio_read_pin(GPIO_t *const pGPIO, gpio_pin_t pin);

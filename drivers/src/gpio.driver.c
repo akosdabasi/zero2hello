@@ -1,22 +1,23 @@
 #include "gpio_driver.h"
+#include "rcc_driver.h"
 
-void gpio_clk_enable(GPIO_t* const pGPIO)
+void gpio_clk_enable(GPIO_t *const pGPIO)
 {
   if(pGPIO == GPIOA)
   {
-    SET_BIT(RCC->APB2ENR, 2);
+    RCC_APB2ENR_IOPA_CLK_ENABLE();    
   }
   else if(pGPIO == GPIOB)
   {
-    SET_BIT(RCC->APB2ENR, 3);
+    RCC_APB2ENR_IOPB_CLK_ENABLE();    
   }
   else if(pGPIO == GPIOC)
   {
-    SET_BIT(RCC->APB2ENR, 4);
+    RCC_APB2ENR_IOPC_CLK_ENABLE();    
   }
   else if(pGPIO == GPIOD)
   {
-    SET_BIT(RCC->APB2ENR, 5);
+    RCC_APB2ENR_IOPD_CLK_ENABLE();    
   }
   else
   {
@@ -25,23 +26,47 @@ void gpio_clk_enable(GPIO_t* const pGPIO)
   
 }
 
-void gpio_clk_disable(GPIO_t* const pGPIO)
+void gpio_clk_disable(GPIO_t *const pGPIO)
 {
   if(pGPIO == GPIOA)
   {
-    CLEAR_BIT(RCC->APB2ENR, 2);
+    RCC_APB2ENR_IOPA_CLK_DISABLE();    
   }
   else if(pGPIO == GPIOB)
   {
-    CLEAR_BIT(RCC->APB2ENR, 3);
+    RCC_APB2ENR_IOPB_CLK_DISABLE();    
   }
   else if(pGPIO == GPIOC)
   {
-    CLEAR_BIT(RCC->APB2ENR, 4);
+    RCC_APB2ENR_IOPC_CLK_DISABLE();    
   }
   else if(pGPIO == GPIOD)
   {
-    CLEAR_BIT(RCC->APB2ENR, 5);
+    RCC_APB2ENR_IOPD_CLK_DISABLE();    
+  }
+  else
+  {
+    /*error handling*/
+  }
+}
+
+void gpio_clk_reset(GPIO_t *const pGPIO)
+{
+  if(pGPIO == GPIOA)
+  {
+    RCC_APB2RSTR_IOPA_RESET();    
+  }
+  else if(pGPIO == GPIOB)
+  {
+    RCC_APB2RSTR_IOPB_RESET();    
+  }
+  else if(pGPIO == GPIOC)
+  {
+    RCC_APB2RSTR_IOPC_RESET();    
+  }
+  else if(pGPIO == GPIOD)
+  {
+    RCC_APB2RSTR_IOPD_RESET();    
   }
   else
   {
@@ -56,7 +81,7 @@ void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg)
   pCfg->pupd = NO_PUPD; //only relevant if submode is SUBMODE_IN_PUPD
 }
 
-void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
+void gpio_set_mode(GPIO_t *const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
 {
   uint8_t reg_idx = pin / 8;
   uint8_t pos = pin % 8;
@@ -83,17 +108,17 @@ void gpio_set_mode(GPIO_t* const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg)
   }
 }
 
-uint8_t gpio_read_pin(GPIO_t* const pGPIO, gpio_pin_t pin)
+uint8_t gpio_read_pin(GPIO_t *const pGPIO, gpio_pin_t pin)
 {
   return (uint8_t)GET_BIT(pGPIO->IDR,pin);
 }
 
-uint16_t gpio_read_port(GPIO_t* const pGPIO)
+uint16_t gpio_read_port(GPIO_t *const pGPIO)
 {
   return (uint16_t)pGPIO->IDR;
 }
 
-void gpio_write_pin(GPIO_t* const pGPIO, gpio_pin_t pin, uint8_t value)
+void gpio_write_pin(GPIO_t *const pGPIO, gpio_pin_t pin, uint8_t value)
 {
   if(value == HIGH)
   {
@@ -105,12 +130,12 @@ void gpio_write_pin(GPIO_t* const pGPIO, gpio_pin_t pin, uint8_t value)
   }
 }
 
-void gpio_write_port(GPIO_t* const pGPIO, uint16_t value)
+void gpio_write_port(GPIO_t *const pGPIO, uint16_t value)
 {
   pGPIO->ODR = (uint32_t)value;
 }
 
-void gpio_toggle_pin(GPIO_t* const pGPIO, gpio_pin_t pin)
+void gpio_toggle_pin(GPIO_t *const pGPIO, gpio_pin_t pin)
 {
   if(GET_BIT(pGPIO->ODR, pin) == LOW)
   {

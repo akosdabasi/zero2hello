@@ -44,10 +44,10 @@ typedef unsigned long long int uint64_t;// Unsigned 64-bit integer
 //utility macros for bit manipulation
 #define BIT(x)                            (1u << x)
 
-#define SET_BIT(word, bit)                (word |= (1u << bit))
-#define GET_BIT(word, bit)                (word >> (bit) & 1u)
-#define CLEAR_BIT(word, bit)              (word &= ~(1u << bit))
-#define TOGGLE_BIT(word, bit)             (word ^= (1u << bit))
+#define SET_BIT(word, pos)                (word |= (1u << pos))
+#define GET_BIT(word, pos)                (word >> (pos) & 1u)
+#define CLEAR_BIT(word, pos)              (word &= ~(1u << pos))
+#define TOGGLE_BIT(word, pos)             (word ^= (1u << pos))
 
 #define GET_BITFIELD(word, mask, pos)     (((uint32_t)word & mask) >> pos)
-#define CLEAR_BITFIELD(word, mask)        ((uint32_t)word &= ~mask)
+#define CLEAR_BITFIELD(word, mask)        (word &= (~(uint32_t)mask))
