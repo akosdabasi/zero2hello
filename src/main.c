@@ -1,28 +1,38 @@
 #include "gpio_driver.h"
-#include "clock_driver.h"
+#include "rcc_driver.h"
+#include "main_cfg.h"
 
-#define TICK_MS 1  //system tick period in ms
+void delay_blocking_ms(uint32_t delay_ms)
+{
+  uint32_t start = ticks;
+  while(ticks - start < delay_ms);
+}
+
 int main(void) 
 {
 
-  systick_init(TICK_MS);
+  rcc_cfg_systick(TICK_PERIOD_MS);
 
   GPIO_PinConfig_t pin_cfg;
-  pin_cfg.mode = MODE_OUT_2;
-  pin_cfg.sub_mode = MODE_OUT_GP_PP;
+  pin_cfg.mode = MODE_OUT_2MHz;
+  pin_cfg.sub_mode = SUBMODE_OUT_GP_PP;
+
+  GPIO_PinConfig_t pin_cfg_opendrain;
+  pin_cfg_opendrain.mode = MODE_OUT_2MHz;
+  pin_cfg_opendrain.sub_mode = SUBMODE_OUT_GP_OD;
 
   gpio_clk_enable(GPIOA);
   gpio_clk_enable(GPIOB);
   gpio_clk_enable(GPIOC);
   gpio_set_mode(GPIOA, 5, &pin_cfg);
-  gpio_set_mode(GPIOB, 5, &pin_cfg);
+  gpio_set_mode(GPIOB, 5, &pin_cfg_opendrain);
   gpio_set_mode(GPIOC, 4, &pin_cfg);
 
   gpio_write_pin(GPIOC,4, HIGH);
   gpio_write_pin(GPIOB,5, HIGH);
   while(1)
   {
-    delay_ms(2000);
+    delay_blocking_ms(1000);
     gpio_toggle_pin(GPIOA, 5);
     gpio_toggle_pin(GPIOC, 4);
     gpio_toggle_pin(GPIOB, 5);

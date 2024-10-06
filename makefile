@@ -21,8 +21,8 @@ SCRIPT_DIR = scripts
 ELF = $(BIN_DIR)$(NAME).elf
 BIN = $(BIN_DIR)$(NAME).bin
 
-CODE_DIRS= ./src ./drivers/src/ ./drivers/core/src
-INC_DIRS= ./inc ./drivers/inc/ ./drivers/core/inc
+CODE_DIRS= ./src/ ./drivers/src/ ./drivers/core/src/
+INC_DIRS= ./inc/ ./drivers/inc/ ./drivers/core/inc/
 
 ## Compiler and linker settings
 # toolchain
@@ -91,6 +91,10 @@ DEP_FILES = $(addprefix $(OBJ_DIR), $(patsubst %.c,%.d,$(notdir $(C_FILES))))
 ## Creating executable
 all: $(BUILD_DIR) $(BIN)
 
+test:
+	@echo $(C_FILES)
+	@echo $(OBJ_FILES)
+	@echo $(OBJ_DIR)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
 
@@ -110,7 +114,7 @@ $(ELF): $(OBJ_FILES)
 $(OBJ_DIR)%.o:drivers/src/%.c
 	$(CC) $(CFLAGS) $< -o $@ 
 
-$(OBJ_DIR)%.o:%.c
+$(OBJ_DIR)%.o:src/%.c
 	$(CC) $(CFLAGS) $< -o $@ 
 
 

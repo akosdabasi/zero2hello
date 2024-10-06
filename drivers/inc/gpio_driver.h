@@ -9,9 +9,9 @@
 
 //Modes 
 #define MODE_IN                    0b00u
-#define MODE_OUT_10                0b01u
-#define MODE_OUT_2                 0b10u
-#define MODE_OUT_50                0b11u
+#define MODE_OUT_10MHz             0b01u
+#define MODE_OUT_2MHz              0b10u
+#define MODE_OUT_50MHz             0b11u
 
 //Sub-modes 
 #define SUBMODE_POS                2u

@@ -23,6 +23,9 @@ typedef unsigned int uint32_t;          // Unsigned 32-bit integer
 typedef long long int int64_t;          // Signed 64-bit integer
 typedef unsigned long long int uint64_t;// Unsigned 64-bit integer
 
+//other type definitions
+typedef void (*isr_callback_t)(void);
+
 //type modifier defines for memmory mapped peripheral registers
 #define __vo volatile
 #define __IO volatile
