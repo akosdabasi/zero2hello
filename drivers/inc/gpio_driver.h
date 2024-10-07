@@ -2,6 +2,7 @@
 
 #include "utils.h"
 #include "mcu_peripherals.h"
+#include "exti_driver.h"
 
 #define PULLDOWN  0u 
 #define PULLUP    1u
@@ -58,15 +59,28 @@ typedef struct{
   uint8_t pupd; 
 } GPIO_PinConfig_t;
 
+typedef void (*gpio_callback_t)(void); 
+
 GPIO_t* gpio_get_port_handler(gpio_port_t port);
+void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg);
+
 void gpio_clk_enable(GPIO_t *const pGPIO);
 void gpio_clk_disable(GPIO_t *const pGPIO);
-void gpio_clk_reset(GPIO_t *const pGPIO);
-void gpio_get_default_cfg(GPIO_PinConfig_t *pCfg);
+void gpio_port_reset(GPIO_t *const pGPIO);
+
 void gpio_set_mode(GPIO_t *const pGPIO, gpio_pin_t pin, GPIO_PinConfig_t *pCfg);
+uint8_t gpio_lock_port(GPIO_t *const pGPIO, uint16_t pins); //returns 1 if the locking sequence was successfull or pins are already locked
+
 uint8_t gpio_read_pin(GPIO_t *const pGPIO, gpio_pin_t pin);
 uint16_t gpio_read_port(GPIO_t *const pGPIO);
 void gpio_write_pin(GPIO_t *const pGPIO, gpio_pin_t pin, uint8_t value);
 void gpio_write_port(GPIO_t *const pGPIO, uint16_t value);
 void gpio_toggle_pin(GPIO_t *const pGPIO, gpio_pin_t pin);
-uint8_t gpio_lock_port(GPIO_t *const pGPIO, uint16_t pins); //returns 1 if the locking sequence was successfull or pins are already locked
+
+/*----------------------------- INTERRUPT HANDLING --------------------------------*/
+void gpio_cfg_irq(gpio_port_t port, gpio_pin_t pin, exti_trigger_t trigger, gpio_callback_t cb);
+void gpio_en_irq(gpio_port_t port, gpio_pin_t pin);
+void gpio_dis_irq(gpio_port_t port, gpio_pin_t pin);
+void gpio_clear_irq_flag(gpio_port_t port, gpio_pin_t pin);
+
+void EXTI0_IRQHandler(void);

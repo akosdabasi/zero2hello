@@ -1,5 +1,27 @@
+#include "nvic.h"
 #include "gpio_driver.h"
 #include "rcc_driver.h"
+#include "afio_driver.h"
+
+exti_line_t pin_to_exti_line_map[] = 
+{
+  line0,
+  line1,
+  line2,
+  line3,
+  line4,
+  line5,
+  line6,
+  line7,
+  line8,
+  line9,
+  line10,
+  line11,
+  line12,
+  line13,
+  line14,
+  line15,
+};
 
 GPIO_t* gpio_get_port_handler(gpio_port_t port)
 {
@@ -12,7 +34,6 @@ GPIO_t* gpio_get_port_handler(gpio_port_t port)
   default: return (GPIO_t*)NULL;    
   }
 }
-
 
 void gpio_clk_enable(GPIO_t *const pGPIO)
 {
@@ -63,7 +84,7 @@ void gpio_clk_disable(GPIO_t *const pGPIO)
   }
 }
 
-void gpio_clk_reset(GPIO_t *const pGPIO)
+void gpio_port_reset(GPIO_t *const pGPIO)
 {
   if(pGPIO == GPIOA)
   {
@@ -168,11 +189,125 @@ uint8_t gpio_lock_port(GPIO_t *const pGPIO, uint16_t pins)
     return 1;
   }
 
-  //execute locking sequence
+  //execute locking sequence with atomic operations
   pGPIO->LCKR = ((uint32_t)pins | GPIOx_LCKR_LCKK_Msk);
   pGPIO->LCKR = (uint32_t)pins;
   pGPIO->LCKR = ((uint32_t)pins | GPIOx_LCKR_LCKK_Msk);
   (void)pGPIO->LCKR;
 
   return (uint8_t)GET_BIT(pGPIO->LCKR, GPIOx_LCKR_LCKK_Pos);  
+}
+
+
+
+/*---------------------------- INTERRUPT HANDLING ---------------------------------*/
+
+//internal callback functions for ISRs
+static gpio_callback_t exti0_4_isr_cbs[5];
+static gpio_callback_t exti9_5_isr_cb;
+static gpio_callback_t exti15_10_isr_cb;
+
+void gpio_cfg_irq(gpio_port_t port, gpio_pin_t pin, exti_trigger_t trigger, gpio_callback_t cb)
+{
+  //check if we got a valid callback
+  if(!cb)return;
+
+  exti_line_t line = pin_to_exti_line_map[pin];
+
+  //register callback to the appropriate exti line
+  if(line < 5)
+  {
+    exti0_4_isr_cbs[line] = cb;
+  }
+  else if(5 <= line && line <= 9)
+  {
+    exti9_5_isr_cb = cb;
+  }
+  else
+  {
+    exti15_10_isr_cb = cb;
+  }
+
+  //attach pin to exti line in afio
+  afio_attach_port_to_exti_line(port, line);
+
+  //configure triggering mode in exti
+  if(trigger == EXTI_TRIGGER_BOTH_EDGES || trigger == EXTI_TRIGGER_RISING_EDGE)
+  {
+    exti_en_rising_trig(line);
+  }
+  else 
+  {
+    exti_dis_rising_trig(line);
+  }
+
+  if(trigger == EXTI_TRIGGER_BOTH_EDGES || trigger == EXTI_TRIGGER_FALLING_EDGE)
+  {
+    exti_en_falling_trig(line);
+  }
+  else
+  {
+    exti_dis_falling_trig(line);
+  }
+
+  //clear exti line pending bit
+  exti_clear_pend(line);
+  
+}
+
+void gpio_en_irq(gpio_port_t port, gpio_pin_t pin)
+{
+  //port parameter is only used for readability
+  (void)port; 
+
+  exti_line_t line = pin_to_exti_line_map[pin];
+
+  //enable interrupt generation in exti
+  exti_en_irq(line);
+
+  //get the IRQ number
+  IRQn_t irqn = exti_line_to_irqn(line);
+
+  //enable interrupt in NVIC
+  __NVIC_EnableIRQ(irqn);
+}
+
+void gpio_dis_irq(gpio_port_t port, gpio_pin_t pin)
+{
+  //port parameter is only used for readability
+  (void)port; 
+
+  exti_line_t line = pin_to_exti_line_map[pin];
+
+  //disable interrupt generation in exti
+  exti_dis_irq(line);
+
+  //get the IRQ number
+  IRQn_t irqn = exti_line_to_irqn(line);
+
+  //disable interrupt in NVIC
+  __NVIC_DisableIRQ(irqn);
+}
+
+void gpio_clear_irq_flag(gpio_port_t port, gpio_pin_t pin)
+{
+  //port parameter is only used for readability
+  (void)port; 
+
+  exti_line_t line = pin_to_exti_line_map[pin];
+
+  //clear pending bit in exti
+  exti_clear_pend(line);
+}
+
+void EXTI0_IRQHandler(void)
+{
+  if(exti_get_pend_stat(line0))
+  {
+    exti_clear_pend(line0);
+    if(exti0_4_isr_cbs[line0])
+    {
+      exti0_4_isr_cbs[line0]();
+    }
+  }
 }

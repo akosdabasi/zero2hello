@@ -1,18 +1,31 @@
 #include "exti_driver.h"
 
-inline void exti_en_irq(exti_line_t line){SET_BIT(EXTI->IMR,line);}
-inline void exti_dis_irq(exti_line_t line){CLEAR_BIT(EXTI->IMR,line);}
+IRQn_t exti_line_to_irqn(exti_line_t line)
+{
+  IRQn_t result;
+  switch (line)
+  {
+  case line0: result = EXTI0_IRQn; break;
+  case line1: result = EXTI1_IRQn; break;
+  case line2: result = EXTI2_IRQn; break;
+  case line3: result = EXTI3_IRQn; break;
+  case line4: result = EXTI4_IRQn; break;
+  case line5: 
+  case line6: 
+  case line7: 
+  case line8: 
+  case line9: result = EXTI9_5_IRQn; break;
+  case line10:
+  case line11:
+  case line12:
+  case line13:
+  case line14:
+  case line15: result = EXTI15_10_IRQn; break;
+  case line16: result = PVD_IRQn; break;
+  case line17: result = RTC_Alarm_IRQn; break;
+  case line18: result = USBWakeUp_IRQn; break;
+  default: break;/*normally we should never come here*/
+  }
 
-inline void exti_en_event(exti_line_t line){SET_BIT(EXTI->EMR,line);}
-inline void exti_dis_event(exti_line_t line){CLEAR_BIT(EXTI->EMR,line);}
-
-inline void exti_en_rising_trig(exti_line_t line){SET_BIT(EXTI->RTSR,line);}
-inline void exti_dis_rising_trig(exti_line_t line){CLEAR_BIT(EXTI->RTSR,line);}
-
-inline void exti_en_falling_trig(exti_line_t line){SET_BIT(EXTI->FTSR,line);}
-inline void exti_dis_falling_trig(exti_line_t line){CLEAR_BIT(EXTI->FTSR,line);}
-
-inline void exti_generate_irq(exti_line_t line){SET_BIT(EXTI->SWIER,line);}
-
-inline uint8_t exti_get_pend_stat(exti_line_t line){return (uint8_t)GET_BIT(EXTI->PR,line);}
-inline void exti_clear_pend(exti_line_t line){SET_BIT(EXTI->PR,line);}
+  return result;
+}

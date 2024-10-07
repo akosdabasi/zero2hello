@@ -75,15 +75,15 @@ typedef struct {
 
 
 //peripherals
-#define GPIOA   ((GPIO_t*)GPIOA_BASE_ADDR) 
-#define GPIOB   ((GPIO_t*)GPIOB_BASE_ADDR) 
-#define GPIOC   ((GPIO_t*)GPIOC_BASE_ADDR) 
-#define GPIOD   ((GPIO_t*)GPIOD_BASE_ADDR)
+#define GPIOA   ((GPIO_t *const)GPIOA_BASE_ADDR) 
+#define GPIOB   ((GPIO_t *const)GPIOB_BASE_ADDR) 
+#define GPIOC   ((GPIO_t *const)GPIOC_BASE_ADDR) 
+#define GPIOD   ((GPIO_t *const)GPIOD_BASE_ADDR)
 
-#define EXTI    ((EXTI_t*)EXTI_BASE_ADDR)
-#define AFIO    ((AFIO_t*)AFIO_BASE_ADDR)
+#define EXTI    ((EXTI_t *const)EXTI_BASE_ADDR)
+#define AFIO    ((AFIO_t *const)AFIO_BASE_ADDR)
 
-#define RCC     ((RCC_t*)RCC_BASE_ADDR)
+#define RCC     ((RCC_t *const)RCC_BASE_ADDR)
 
 /*--------------------------GPIO BIT FIELD POSITION AND MASK DEFINITIONS-------------------------------*/
 // GPIOx_LCKR Register Fields
