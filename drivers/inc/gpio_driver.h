@@ -26,6 +26,13 @@
 #define SUBMODE_OUT_ALT_OD         (0b11u << SUBMODE_POS)
 
 typedef enum {
+  portA,
+  portB,
+  portC,
+  portD
+} gpio_port_t;
+
+typedef enum {
   pin0,
   pin1,
   pin2,
@@ -51,6 +58,7 @@ typedef struct{
   uint8_t pupd; 
 } GPIO_PinConfig_t;
 
+GPIO_t* gpio_get_port_handler(gpio_port_t port);
 void gpio_clk_enable(GPIO_t *const pGPIO);
 void gpio_clk_disable(GPIO_t *const pGPIO);
 void gpio_clk_reset(GPIO_t *const pGPIO);

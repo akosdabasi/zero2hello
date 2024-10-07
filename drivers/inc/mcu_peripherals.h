@@ -7,26 +7,28 @@
 #include "utils.h"
 
 //memory base addresses
-#define SRAM_BASE_ADDR    0x20000000U
-#define FLASH_BASE_ADDR   0x08000000U
+#define SRAM_BASE_ADDR    0x20000000u
+#define FLASH_BASE_ADDR   0x08000000u
 
 
 //bus domain base addresses
-#define APB1_BASE_ADDR    0x40000000U
-#define APB2_BASE_ADDR    0x40010000U
-#define AHB_BASE_ADDR     0x40018000U
+#define APB1_BASE_ADDR    0x40000000u
+#define APB2_BASE_ADDR    0x40010000u
+#define AHB_BASE_ADDR     0x40018000u
 
 
 
 //peripheral base addresses
 //APB2
-#define GPIOA_BASE_ADDR   (APB2_BASE_ADDR + 0x0800U)
-#define GPIOB_BASE_ADDR   (APB2_BASE_ADDR + 0x0C00U)
-#define GPIOC_BASE_ADDR   (APB2_BASE_ADDR + 0x1000U)
-#define GPIOD_BASE_ADDR   (APB2_BASE_ADDR + 0x1400U)
+#define GPIOA_BASE_ADDR   0x40010800u
+#define GPIOB_BASE_ADDR   0x40010C00u
+#define GPIOC_BASE_ADDR   0x40011000u
+#define GPIOD_BASE_ADDR   0x40011400u
+#define EXTI_BASE_ADDR    0x40010400u
+#define AFIO_BASE_ADDR    0x40010000u
 
 //AHB
-#define RCC_BASE_ADDR      (AHB_BASE_ADDR + 0x9000U)
+#define RCC_BASE_ADDR      0x40021000u
 
 
 
@@ -55,6 +57,21 @@ typedef struct{
 
 } RCC_t;
 
+typedef struct {
+    __vo uint32_t IMR;     // Interrupt Mask Register
+    __vo uint32_t EMR;     // Event Mask Register
+    __vo uint32_t RTSR;    // Rising Trigger Selection Register
+    __vo uint32_t FTSR;    // Falling Trigger Selection Register
+    __vo uint32_t SWIER;   // Software Interrupt Event Register
+    __vo uint32_t PR;      // Pending Register
+} EXTI_t;
+
+typedef struct {
+    __vo uint32_t EVCR;        // Event Control Register
+    __vo uint32_t MAPR;        // Remap and Debug I/O Configuration Register
+    __vo uint32_t EXTICR[4];   // External Interrupt Configuration Registers (EXTICR1 to EXTICR4)
+    __vo uint32_t MAPR2;       // Remap and Debug I/O Configuration Register 2 (only available on some devices)
+} AFIO_t;
 
 
 //peripherals
@@ -62,6 +79,9 @@ typedef struct{
 #define GPIOB   ((GPIO_t*)GPIOB_BASE_ADDR) 
 #define GPIOC   ((GPIO_t*)GPIOC_BASE_ADDR) 
 #define GPIOD   ((GPIO_t*)GPIOD_BASE_ADDR)
+
+#define EXTI    ((EXTI_t*)EXTI_BASE_ADDR)
+#define AFIO    ((AFIO_t*)AFIO_BASE_ADDR)
 
 #define RCC     ((RCC_t*)RCC_BASE_ADDR)
 
@@ -502,3 +522,69 @@ typedef struct{
 
 #define RCC_CSR_LPWRRSTF_Pos      (31U)  // Position of LPWRRSTF bit
 #define RCC_CSR_LPWRRSTF_Msk      (1U << RCC_CSR_LPWRRSTF_Pos) // Mask for LPWRRSTF bit
+
+/*-------------------------- AFIO BIT FIELD POSITION AND MASK DEFINITIONS -------------------------------*/
+
+// AFIO_EVCR Register Fields
+#define AFIO_EVCR_PIN_Pos                   (0U)  // Position of PIN[3:0] bit
+#define AFIO_EVCR_PIN_Msk                   (0xF << AFIO_EVCR_PIN_Pos)  // Mask for PIN[3:0] bits (0b1111)
+        
+#define AFIO_EVCR_PORT_Pos                  (4U)  // Position of PORT[2:0] bit
+#define AFIO_EVCR_PORT_Msk                  (0x7 << AFIO_EVCR_PORT_Pos) // Mask for PORT[2:0] bits (0b111)
+        
+#define AFIO_EVCR_EVOE_Pos                  (7U)  // Position of EVOE bit
+#define AFIO_EVCR_EVOE_Msk                  (1U << AFIO_EVCR_EVOE_Pos)  // Mask for EVOE bit (0b1)
+
+
+// AFIO_MAPR Register Fields
+#define AFIO_MAPR_SPI1_REMAP_Pos            (0U)  // Position of SPI1_REMAP bit
+#define AFIO_MAPR_SPI1_REMAP_Msk            (1U << AFIO_MAPR_SPI1_REMAP_Pos)  // Mask for SPI1_REMAP bit
+
+#define AFIO_MAPR_I2C1_REMAP_Pos            (1U)  // Position of I2C1_REMAP bit
+#define AFIO_MAPR_I2C1_REMAP_Msk            (1U << AFIO_MAPR_I2C1_REMAP_Pos)  // Mask for I2C1_REMAP bit
+
+#define AFIO_MAPR_USART1_REMAP_Pos          (2U)  // Position of USART1_REMAP bit
+#define AFIO_MAPR_USART1_REMAP_Msk          (1U << AFIO_MAPR_USART1_REMAP_Pos)  // Mask for USART1_REMAP bit
+
+#define AFIO_MAPR_USART2_REMAP_Pos          (3U)  // Position of USART2_REMAP bit
+#define AFIO_MAPR_USART2_REMAP_Msk          (1U << AFIO_MAPR_USART2_REMAP_Pos)  // Mask for USART2_REMAP bit
+
+#define AFIO_MAPR_USART3_REMAP_Pos          (4U)  // Position of USART3_REMAP[1:0] bits
+#define AFIO_MAPR_USART3_REMAP_Msk          (0x3 << AFIO_MAPR_USART3_REMAP_Pos)  // Mask for USART3_REMAP[1:0] bits (2 bits)
+
+#define AFIO_MAPR_TIM1_REMAP_Pos            (6U)  // Position of TIM1_REMAP[1:0] bits
+#define AFIO_MAPR_TIM1_REMAP_Msk            (0x3 << AFIO_MAPR_TIM1_REMAP_Pos)  // Mask for TIM1_REMAP[1:0] bits (2 bits)
+
+#define AFIO_MAPR_TIM2_REMAP_Pos            (8U)  // Position of TIM2_REMAP[1:0] bits
+#define AFIO_MAPR_TIM2_REMAP_Msk            (0x3 << AFIO_MAPR_TIM2_REMAP_Pos)  // Mask for TIM2_REMAP[1:0] bits (2 bits)
+
+#define AFIO_MAPR_TIM3_REMAP_Pos            (10U)  // Position of TIM3_REMAP[1:0] bits
+#define AFIO_MAPR_TIM3_REMAP_Msk            (0x3 << AFIO_MAPR_TIM3_REMAP_Pos)  // Mask for TIM3_REMAP[1:0] bits (2 bits)
+
+#define AFIO_MAPR_TIM4_REMAP_Pos            (12U)  // Position of TIM4_REMAP bit
+#define AFIO_MAPR_TIM4_REMAP_Msk            (1U << AFIO_MAPR_TIM4_REMAP_Pos)  // Mask for TIM4_REMAP bit
+
+#define AFIO_MAPR_CAN_REMAP_Pos             (13U)  // Position of CAN_REMAP[1:0] bits
+#define AFIO_MAPR_CAN_REMAP_Msk             (0x3 << AFIO_MAPR_CAN_REMAP_Pos)  // Mask for CAN_REMAP[1:0] bits (2 bits)
+
+#define AFIO_MAPR_PD01_REMAP_Pos            (15U)  // Position of PD01_REMAP bit
+#define AFIO_MAPR_PD01_REMAP_Msk            (1U << AFIO_MAPR_PD01_REMAP_Pos)  // Mask for PD01_REMAP bit
+
+#define AFIO_MAPR_TIM5CH4_IREMAP_Pos        (16U)  // Position of TIM5CH4_IREMAP bit
+#define AFIO_MAPR_TIM5CH4_IREMAP_Msk        (1U << AFIO_MAPR_TIM5CH4_IREMAP_Pos)  // Mask for TIM5CH4_IREMAP bit
+
+#define AFIO_MAPR_ADC1_ETRGINJ_REMAP_Pos    (17U)  // Position of ADC1_ETRGINJ_REMAP bit
+#define AFIO_MAPR_ADC1_ETRGINJ_REMAP_Msk    (1U << AFIO_MAPR_ADC1_ETRGINJ_REMAP_Pos)  // Mask for ADC1_ETRGINJ_REMAP bit
+
+#define AFIO_MAPR_ADC1_ETRGREG_REMAP_Pos    (18U)  // Position of ADC1_ETRGREG_REMAP bit
+#define AFIO_MAPR_ADC1_ETRGREG_REMAP_Msk    (1U << AFIO_MAPR_ADC1_ETRGREG_REMAP_Pos)  // Mask for ADC1_ETRGREG_REMAP bit
+
+#define AFIO_MAPR_ADC2_ETRGINJ_REMAP_Pos    (19U)  // Position of ADC2_ETRGINJ_REMAP bit
+#define AFIO_MAPR_ADC2_ETRGINJ_REMAP_Msk    (1U << AFIO_MAPR_ADC2_ETRGINJ_REMAP_Pos)  // Mask for ADC2_ETRGINJ_REMAP bit
+
+#define AFIO_MAPR_ADC2_ETRGREG_REMAP_Pos    (20U)  // Position of ADC2_ETRGREG_REMAP bit
+#define AFIO_MAPR_ADC2_ETRGREG_REMAP_Msk    (1U << AFIO_MAPR_ADC2_ETRGREG_REMAP_Pos)  // Mask for ADC2_ETRGREG_REMAP bit
+
+#define AFIO_MAPR_SWJ_CFG_Pos               (24U)  // Position of SWJ_CFG[2:0] bits
+#define AFIO_MAPR_SWJ_CFG_Msk               (0x7 << AFIO_MAPR_SWJ_CFG_Pos)  // Mask for SWJ_CFG[2:0] bits (3 bits)
+

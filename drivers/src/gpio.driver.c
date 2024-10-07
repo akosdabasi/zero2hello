@@ -1,6 +1,19 @@
 #include "gpio_driver.h"
 #include "rcc_driver.h"
 
+GPIO_t* gpio_get_port_handler(gpio_port_t port)
+{
+  switch (port)
+  {
+  case portA: return GPIOA;
+  case portB: return GPIOB;
+  case portC: return GPIOC;
+  case portD: return GPIOD;
+  default: return (GPIO_t*)NULL;    
+  }
+}
+
+
 void gpio_clk_enable(GPIO_t *const pGPIO)
 {
   if(pGPIO == GPIOA)

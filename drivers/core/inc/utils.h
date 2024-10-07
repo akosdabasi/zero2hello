@@ -24,7 +24,11 @@ typedef long long int int64_t;          // Signed 64-bit integer
 typedef unsigned long long int uint64_t;// Unsigned 64-bit integer
 
 //other type definitions
+//function pointers
 typedef void (*isr_callback_t)(void);
+
+//null pointer
+#define NULL (void*)0;
 
 //type modifier defines for memmory mapped peripheral registers
 #define __vo volatile
@@ -48,9 +52,10 @@ typedef void (*isr_callback_t)(void);
 #define BIT(x)                            (1u << x)
 
 #define SET_BIT(word, pos)                (word |= (1u << pos))
-#define GET_BIT(word, pos)                (word >> (pos) & 1u)
+#define GET_BIT(word, pos)                ((word >> pos) & 1u)
 #define CLEAR_BIT(word, pos)              (word &= ~(1u << pos))
 #define TOGGLE_BIT(word, pos)             (word ^= (1u << pos))
+#define EN_DIS_BIT(word, pos, enable)     ({if (enable) {SET_BIT(word, pos);} else {CLEAR_BIT(word, pos);}})
 
 #define GET_BITFIELD(word, mask, pos)     (((uint32_t)word & mask) >> pos)
 #define CLEAR_BITFIELD(word, mask)        (word &= (~(uint32_t)mask))
