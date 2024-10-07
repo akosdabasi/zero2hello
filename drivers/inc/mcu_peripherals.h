@@ -85,6 +85,10 @@ typedef struct {
 
 #define RCC     ((RCC_t*)RCC_BASE_ADDR)
 
+/*--------------------------GPIO BIT FIELD POSITION AND MASK DEFINITIONS-------------------------------*/
+// GPIOx_LCKR Register Fields
+#define GPIOx_LCKR_LCKK_Pos         (16U)  // Position of HSION bit
+#define GPIOx_LCKR_LCKK_Msk         (1U << GPIOx_LCKR_LCKK_Pos)  // Mask for HSION bit
 
 /*--------------------------RCC BIT FIELD POSITION AND MASK DEFINITIONS-------------------------------*/
 // RCC_CR Register Fields
@@ -528,10 +532,10 @@ typedef struct {
 // AFIO_EVCR Register Fields
 #define AFIO_EVCR_PIN_Pos                   (0U)  // Position of PIN[3:0] bit
 #define AFIO_EVCR_PIN_Msk                   (0xF << AFIO_EVCR_PIN_Pos)  // Mask for PIN[3:0] bits (0b1111)
-        
+
 #define AFIO_EVCR_PORT_Pos                  (4U)  // Position of PORT[2:0] bit
 #define AFIO_EVCR_PORT_Msk                  (0x7 << AFIO_EVCR_PORT_Pos) // Mask for PORT[2:0] bits (0b111)
-        
+
 #define AFIO_EVCR_EVOE_Pos                  (7U)  // Position of EVOE bit
 #define AFIO_EVCR_EVOE_Msk                  (1U << AFIO_EVCR_EVOE_Pos)  // Mask for EVOE bit (0b1)
 

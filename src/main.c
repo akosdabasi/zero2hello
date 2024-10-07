@@ -28,8 +28,10 @@ int main(void)
   gpio_set_mode(GPIOB, 5, &pin_cfg_opendrain);
   gpio_set_mode(GPIOC, 4, &pin_cfg);
 
+  uint8_t locked = gpio_lock_port(GPIOB, (uint16_t)(1u << 5));
   gpio_write_pin(GPIOC,4, HIGH);
   gpio_write_pin(GPIOB,5, HIGH);
+  (void)locked; //suppress unused variable warning
   while(1)
   {
     delay_blocking_ms(1000);

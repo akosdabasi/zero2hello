@@ -159,3 +159,20 @@ void gpio_toggle_pin(GPIO_t *const pGPIO, gpio_pin_t pin)
     pGPIO->BSRR = (1u << (pin+16));
   }
 }
+
+uint8_t gpio_lock_port(GPIO_t *const pGPIO, uint16_t pins)
+{
+  if(GET_BIT(pGPIO->LCKR, GPIOx_LCKR_LCKK_Pos))
+  {
+    //pins are already locked.
+    return 1;
+  }
+
+  //execute locking sequence
+  pGPIO->LCKR = ((uint32_t)pins | GPIOx_LCKR_LCKK_Msk);
+  pGPIO->LCKR = (uint32_t)pins;
+  pGPIO->LCKR = ((uint32_t)pins | GPIOx_LCKR_LCKK_Msk);
+  (void)pGPIO->LCKR;
+
+  return (uint8_t)GET_BIT(pGPIO->LCKR, GPIOx_LCKR_LCKK_Pos);  
+}

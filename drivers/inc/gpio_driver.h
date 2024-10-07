@@ -69,3 +69,4 @@ uint16_t gpio_read_port(GPIO_t *const pGPIO);
 void gpio_write_pin(GPIO_t *const pGPIO, gpio_pin_t pin, uint8_t value);
 void gpio_write_port(GPIO_t *const pGPIO, uint16_t value);
 void gpio_toggle_pin(GPIO_t *const pGPIO, gpio_pin_t pin);
+uint8_t gpio_lock_port(GPIO_t *const pGPIO, uint16_t pins); //returns 1 if the locking sequence was successfull or pins are already locked
