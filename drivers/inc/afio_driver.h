@@ -47,6 +47,8 @@ typedef enum {
 } tim3_remap_t;
 
 static inline void afio_clk_enable(){RCC_APB2ENR_AFIO_CLK_ENABLE();}
+static inline void afio_clk_disable(){RCC_APB2ENR_AFIO_CLK_DISABLE();}
+static inline void afio_clk_enable(){RCC_APB2RSTR_AFIO_RESET();}
 
 static inline void afio_en_EVENTOUT(){SET_BIT(pAFIO->EVCR, AFIO_EVCR_EVOE_Pos);}
 
