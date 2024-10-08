@@ -19,6 +19,11 @@
 
 
 //peripheral base addresses
+//APB1
+#define SPI2_BASE_ADDR    0x40003800u
+#define SPI3_BASE_ADDR    0x40003C00u
+
+
 //APB2
 #define GPIOA_BASE_ADDR   0x40010800u
 #define GPIOB_BASE_ADDR   0x40010C00u
@@ -26,6 +31,7 @@
 #define GPIOD_BASE_ADDR   0x40011400u
 #define EXTI_BASE_ADDR    0x40010400u
 #define AFIO_BASE_ADDR    0x40010000u
+#define SPI1_BASE_ADDR    0x40013000u  
 
 //AHB
 #define RCC_BASE_ADDR      0x40021000u
@@ -73,6 +79,17 @@ typedef struct {
     __vo uint32_t MAPR2;       // Remap and Debug I/O Configuration Register 2 (only available on some devices)
 } AFIO_t;
 
+typedef struct {
+    __vo uint32_t CR1;        // SPI Control Register 1
+    __vo uint32_t CR2;        // SPI Control Register 2
+    __vo uint32_t SR;         // SPI Status Register
+    __vo uint32_t DR;         // SPI Data Register
+    __vo uint32_t CRCPR;      // SPI CRC Polynomial Register
+    __vo uint32_t RXCRCR;     // SPI RX CRC Register
+    __vo uint32_t TXCRCR;     // SPI TX CRC Register
+    __vo uint32_t I2SCFGR;    // SPI_I2S Configuration Register
+    __vo uint32_t I2SPR;      // SPI_I2S Prescaler Register
+} SPI_t;
 
 //peripherals
 #define GPIOA   ((GPIO_t *const)GPIOA_BASE_ADDR) 
@@ -80,10 +97,119 @@ typedef struct {
 #define GPIOC   ((GPIO_t *const)GPIOC_BASE_ADDR) 
 #define GPIOD   ((GPIO_t *const)GPIOD_BASE_ADDR)
 
+#define SPI1    ((SPI_t *const)SPI1_BASE_ADDR)
+#define SPI2    ((SPI_t *const)SPI2_BASE_ADDR)
+#define SPI3    ((SPI_t *const)SPI3_BASE_ADDR)
+
 #define EXTI    ((EXTI_t *const)EXTI_BASE_ADDR)
 #define AFIO    ((AFIO_t *const)AFIO_BASE_ADDR)
 
 #define RCC     ((RCC_t *const)RCC_BASE_ADDR)
+
+/*--------------------------SPI BIT FIELD POSITION AND MASK DEFINITIONS-------------------------------*/
+// SPI_CR1 Register Fields
+#define SPI_CR1_CPHA_Pos           (0U)                           // Clock Phase bit position
+#define SPI_CR1_CPHA_Msk           (1U << SPI_CR1_CPHA_Pos)       // Clock Phase mask
+
+#define SPI_CR1_CPOL_Pos           (1U)                           // Clock Polarity bit position
+#define SPI_CR1_CPOL_Msk           (1U << SPI_CR1_CPOL_Pos)       // Clock Polarity mask
+
+#define SPI_CR1_MSTR_Pos           (2U)                           // Master Selection bit position
+#define SPI_CR1_MSTR_Msk           (1U << SPI_CR1_MSTR_Pos)       // Master Selection mask
+
+#define SPI_CR1_BR_Pos             (3U)                           // Baud Rate Control bit position (BR[2:0])
+#define SPI_CR1_BR_Msk             (7U << SPI_CR1_BR_Pos)         // Baud Rate Control mask (3 bits)
+
+#define SPI_CR1_SPE_Pos            (6U)                           // SPI Enable bit position
+#define SPI_CR1_SPE_Msk            (1U << SPI_CR1_SPE_Pos)        // SPI Enable mask
+
+#define SPI_CR1_LSBFIRST_Pos       (7U)                           // Frame Format (LSB First) bit position
+#define SPI_CR1_LSBFIRST_Msk       (1U << SPI_CR1_LSBFIRST_Pos)   // Frame Format mask
+
+#define SPI_CR1_SSI_Pos            (8U)                           // Internal Slave Select bit position
+#define SPI_CR1_SSI_Msk            (1U << SPI_CR1_SSI_Pos)        // Internal Slave Select mask
+
+#define SPI_CR1_SSM_Pos            (9U)                           // Software Slave Management bit position
+#define SPI_CR1_SSM_Msk            (1U << SPI_CR1_SSM_Pos)        // Software Slave Management mask
+
+#define SPI_CR1_RXONLY_Pos         (10U)                          // Receive Only mode bit position
+#define SPI_CR1_RXONLY_Msk         (1U << SPI_CR1_RXONLY_Pos)     // Receive Only mode mask
+
+#define SPI_CR1_DFF_Pos            (11U)                          // Data Frame Format bit position
+#define SPI_CR1_DFF_Msk            (1U << SPI_CR1_DFF_Pos)        // Data Frame Format mask
+
+#define SPI_CR1_CRCNEXT_Pos        (12U)                          // CRC Transfer Next bit position
+#define SPI_CR1_CRCNEXT_Msk        (1U << SPI_CR1_CRCNEXT_Pos)    // CRC Transfer Next mask
+
+#define SPI_CR1_CRCEN_Pos          (13U)                          // CRC Enable bit position
+#define SPI_CR1_CRCEN_Msk          (1U << SPI_CR1_CRCEN_Pos)      // CRC Enable mask
+
+#define SPI_CR1_BIDIOE_Pos         (14U)                          // Output Enable in Bidirectional Mode bit position
+#define SPI_CR1_BIDIOE_Msk         (1U << SPI_CR1_BIDIOE_Pos)     // Output Enable in Bidirectional Mode mask
+
+#define SPI_CR1_BIDIMODE_Pos       (15U)                          // Bidirectional Data Mode Enable bit position
+#define SPI_CR1_BIDIMODE_Msk       (1U << SPI_CR1_BIDIMODE_Pos)   // Bidirectional Data Mode Enable mask
+
+// SPI_CR2 Register Fields
+#define SPI_CR2_RXDMAEN_Pos        (0U)                           // RX Buffer DMA Enable bit position
+#define SPI_CR2_RXDMAEN_Msk        (1U << SPI_CR2_RXDMAEN_Pos)    // RX Buffer DMA Enable mask
+
+#define SPI_CR2_TXDMAEN_Pos        (1U)                           // TX Buffer DMA Enable bit position
+#define SPI_CR2_TXDMAEN_Msk        (1U << SPI_CR2_TXDMAEN_Pos)    // TX Buffer DMA Enable mask
+
+#define SPI_CR2_SSOE_Pos           (2U)                           // SS Output Enable bit position
+#define SPI_CR2_SSOE_Msk           (1U << SPI_CR2_SSOE_Pos)       // SS Output Enable mask
+
+#define SPI_CR2_ERRIE_Pos          (5U)                           // Error Interrupt Enable bit position
+#define SPI_CR2_ERRIE_Msk          (1U << SPI_CR2_ERRIE_Pos)      // Error Interrupt Enable mask
+
+#define SPI_CR2_RXNEIE_Pos         (6U)                           // RX Buffer Not Empty Interrupt Enable bit position
+#define SPI_CR2_RXNEIE_Msk         (1U << SPI_CR2_RXNEIE_Pos)     // RX Buffer Not Empty Interrupt Enable mask
+
+#define SPI_CR2_TXEIE_Pos          (7U)                           // TX Buffer Empty Interrupt Enable bit position
+#define SPI_CR2_TXEIE_Msk          (1U << SPI_CR2_TXEIE_Pos)      // TX Buffer Empty Interrupt Enable mask
+
+// SPI_SR Register Fields
+#define SPI_SR_RXNE_Pos            (0U)                           // Receive Buffer Not Empty bit position
+#define SPI_SR_RXNE_Msk            (1U << SPI_SR_RXNE_Pos)        // Receive Buffer Not Empty mask
+
+#define SPI_SR_TXE_Pos             (1U)                           // Transmit Buffer Empty bit position
+#define SPI_SR_TXE_Msk             (1U << SPI_SR_TXE_Pos)         // Transmit Buffer Empty mask
+
+#define SPI_SR_CHSIDE_Pos          (2U)                           // Channel Side bit position (for I2S)
+#define SPI_SR_CHSIDE_Msk          (1U << SPI_SR_CHSIDE_Pos)      // Channel Side mask
+
+#define SPI_SR_UDR_Pos             (3U)                           // Underrun Flag bit position (for I2S)
+#define SPI_SR_UDR_Msk             (1U << SPI_SR_UDR_Pos)         // Underrun Flag mask
+
+#define SPI_SR_CRCERR_Pos          (4U)                           // CRC Error Flag bit position
+#define SPI_SR_CRCERR_Msk          (1U << SPI_SR_CRCERR_Pos)      // CRC Error Flag mask
+
+#define SPI_SR_MODF_Pos            (5U)                           // Mode Fault Flag bit position
+#define SPI_SR_MODF_Msk            (1U << SPI_SR_MODF_Pos)        // Mode Fault Flag mask
+
+#define SPI_SR_OVR_Pos             (6U)                           // Overrun Flag bit position
+#define SPI_SR_OVR_Msk             (1U << SPI_SR_OVR_Pos)         // Overrun Flag mask
+
+#define SPI_SR_BSY_Pos             (7U)                           // Busy Flag bit position
+#define SPI_SR_BSY_Msk             (1U << SPI_SR_BSY_Pos)         // Busy Flag mask
+
+// SPI_DR Register Fields
+#define SPI_DR_DR_Pos              (0U)                           // Data Register bit position
+#define SPI_DR_DR_Msk              (0xFFFFU << SPI_DR_DR_Pos)     // Data Register mask (16 bits)
+
+// SPI_CRCPR Register Fields
+#define SPI_CRCPR_CRCPOLY_Pos      (0U)                                 // CRC Polynomial bit position
+#define SPI_CRCPR_CRCPOLY_Msk      (0xFFFFU << SPI_CRCPR_CRCPOLY_Pos)   // CRC Polynomial mask (16 bits)
+
+// SPI_RXCRCR Register Fields
+#define SPI_RXCRCR_RXCRC_Pos       (0U)                                 // RX CRC bit position
+#define SPI_RXCRCR_RXCRC_Msk       (0xFFFFU << SPI_RXCRCR_RXCRC_Pos)    // RX CRC mask (16 bits)
+
+// SPI_TXCRCR Register Fields
+#define SPI_TXCRCR_TXCRC_Pos       (0U)                                 // TX CRC bit position
+#define SPI_TXCRCR_TXCRC_Msk       (0xFFFFU << SPI_TXCRCR_TXCRC_Pos)    // TX CRC mask (16 bits)
+
 
 /*--------------------------GPIO BIT FIELD POSITION AND MASK DEFINITIONS-------------------------------*/
 // GPIOx_LCKR Register Fields
