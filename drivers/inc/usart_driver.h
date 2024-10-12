@@ -4,6 +4,12 @@
 #include "rcc_driver.h"
 
 typedef enum {
+  USART_MODE_RX = 0,             
+  USART_MODE_TX = 1,             
+  USART_MODE_TX_RX = 2
+} usart_mode_t;
+
+typedef enum {
   USART_DATA_LENGTH_8 = 0,
   USART_DATA_LENGTH_9 = 1
 } usart_data_length_t;
