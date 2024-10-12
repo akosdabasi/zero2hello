@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/Dev/projects/zero2hello",
+      "program": "c:/Dev/projects/zero2hello/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "c:\\Tools\\GNU_Arm_Embedded_Toolchain\\10_2021.10\\bin\\arm-none-eabi-gdb.exe",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

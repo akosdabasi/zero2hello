@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "name": "windows-gcc-arm64",
+      "compilerPath": "c:\\Tools\\GNU_Arm_Embedded_Toolchain\\10_2021.10\\bin\\arm-none-eabi-gcc.exe",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/drivers/inc",
+        "${workspaceFolder}/snippets/inc",
+        "${workspaceFolder}/inc"
+      ],
+      "cStandard": "${default}",
+      "cppStandard": "${default}",
+      "intelliSenseMode": "windows-gcc-arm64"
+    }
+  ],
+  "version": 4
+}
