@@ -21,8 +21,8 @@ SCRIPT_DIR = scripts
 ELF = $(BIN_DIR)$(NAME).elf
 BIN = $(BIN_DIR)$(NAME).bin
 
-CODE_DIRS= ./src/ ./drivers/src/ ./drivers/core/src/
-INC_DIRS= ./inc/ ./drivers/inc/ ./drivers/core/inc/
+CODE_DIRS= ./src/ ./drivers/src/ ./drivers/core/src/ ./snippets/src/
+INC_DIRS= ./inc/ ./drivers/inc/ ./drivers/core/inc/ ./snippets/inc/
 
 ## Compiler and linker settings
 # toolchain
@@ -112,6 +112,9 @@ $(ELF): $(OBJ_FILES)
 
 # only want the .c file dependency here, thus $< instead of $^.
 $(OBJ_DIR)%.o:drivers/src/%.c
+	$(CC) $(CFLAGS) $< -o $@ 
+
+$(OBJ_DIR)%.o:snippets/src/%.c
 	$(CC) $(CFLAGS) $< -o $@ 
 
 $(OBJ_DIR)%.o:src/%.c

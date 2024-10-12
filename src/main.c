@@ -1,44 +1,49 @@
-#include "gpio_driver.h"
-#include "rcc_driver.h"
-#include "afio_driver.h"
-#include "main_cfg.h"
+#include "user_snippets.h"
 
-void delay_blocking_ms(uint32_t delay_ms)
-{
-  uint32_t start = ticks;
-  while(ticks - start < delay_ms);
-}
 
-void toggle_led(void)
+uint8_t transmissiondone = 0;
+void spiEventHandler(spi_handle_t *const hspi, spi_event_t event)
 {
-  gpio_toggle_pin(GPIOA, 5);
+  if(event == SPI_EVENT_TRANS_COMPLETE)
+  {
+    transmissiondone = 1;
+    (void)hspi;
+  }
 }
 
 int main(void) 
 {
 
+  /*System timer config*/
   rcc_cfg_systick(TICK_PERIOD_MS);
 
-  GPIO_PinConfig_t out_pp;
-  out_pp.mode = MODE_OUT_2MHz;
-  out_pp.sub_mode = SUBMODE_OUT_GP_PP;
+  /*SP1 config*/
+  config_spi1_to_master();
+  spi_init(&hspi1); //init SPI1
+  spi_set_ssoe(&hspi1, enabled); //automatic SSN managment
+  spi_register_cb(&hspi1, spiEventHandler);
+  spi_nvic_enable_it(&hspi1);
 
-  GPIO_PinConfig_t in_pu;
-  in_pu.mode = MODE_IN;
-  in_pu.sub_mode = SUBMODE_IN_PUPD;
-  in_pu.pupd = PULLUP;
+  //input buffer
+  uint8_t rx_data[10];
+  zero_array(rx_data, 10);
 
-  gpio_clk_enable(GPIOA);
-  gpio_clk_enable(GPIOB);
-  gpio_set_mode(GPIOA, 5, &out_pp);
-  gpio_set_mode(GPIOB, 0, &in_pu);
-
-  afio_clk_enable();
-  gpio_cfg_irq(portB, 0, EXTI_TRIGGER_FALLING_EDGE, toggle_led);
-  gpio_en_irq(portB, 0);
+  //output buffer
+  uint8_t tx_data[10] = "toggle";
+  
+  spi_transcieve_it(&hspi1, &tx_data[0], &rx_data[0], (uint16_t)10u);
+  (void)rx_data;
 
   while(1)
   {
+    if(transmissiondone)
+    {
+      while (1)
+      {
+        /* code */
+      }
+      
+    }
   }
 
   return 0;

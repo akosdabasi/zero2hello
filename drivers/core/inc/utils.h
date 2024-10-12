@@ -47,6 +47,10 @@ typedef void (*isr_callback_t)(void);
 #define HIGH    TRUE
 #define LOW     FALSE
 
+typedef enum {
+  disabled = 0,
+  enabled  = 1
+} state_t;
 
 //utility macros for bit manipulation
 #define BIT(x)                            (1u << x)
