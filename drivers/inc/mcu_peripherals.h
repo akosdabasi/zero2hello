@@ -123,6 +123,164 @@ typedef struct {
 
 #define RCC     ((RCC_t *const)RCC_BASE_ADDR)
 
+/*--------------------------USART SR BIT FIELD POSITION AND MASK DEFINITIONS-------------------------------*/
+// USART_SR Register Fields
+#define USART_SR_PE_Pos            (0U)                           // Parity Error bit position
+#define USART_SR_PE_Msk            (1U << USART_SR_PE_Pos)        // Parity Error mask
+
+#define USART_SR_FE_Pos            (1U)                           // Framing Error bit position
+#define USART_SR_FE_Msk            (1U << USART_SR_FE_Pos)        // Framing Error mask
+
+#define USART_SR_NE_Pos            (2U)                           // Noise Error Flag bit position
+#define USART_SR_NE_Msk            (1U << USART_SR_NE_Pos)        // Noise Error mask
+
+#define USART_SR_ORE_Pos           (3U)                           // Overrun Error bit position
+#define USART_SR_ORE_Msk           (1U << USART_SR_ORE_Pos)       // Overrun Error mask
+
+#define USART_SR_IDLE_Pos          (4U)                           // IDLE Line Detected bit position
+#define USART_SR_IDLE_Msk          (1U << USART_SR_IDLE_Pos)      // IDLE Line Detected mask
+
+#define USART_SR_RXNE_Pos          (5U)                           // Read Data Register Not Empty bit position
+#define USART_SR_RXNE_Msk          (1U << USART_SR_RXNE_Pos)      // Read Data Register Not Empty mask
+
+#define USART_SR_TC_Pos            (6U)                           // Transmission Complete bit position
+#define USART_SR_TC_Msk            (1U << USART_SR_TC_Pos)        // Transmission Complete mask
+
+#define USART_SR_TXE_Pos           (7U)                           // Transmit Data Register Empty bit position
+#define USART_SR_TXE_Msk           (1U << USART_SR_TXE_Pos)       // Transmit Data Register Empty mask
+
+#define USART_SR_LBD_Pos           (8U)                           // LIN Break Detection Flag bit position
+#define USART_SR_LBD_Msk           (1U << USART_SR_LBD_Pos)       // LIN Break Detection Flag mask
+
+#define USART_SR_CTS_Pos           (9U)                           // CTS Flag bit position
+#define USART_SR_CTS_Msk           (1U << USART_SR_CTS_Pos)       // CTS Flag mask
+
+// USART_DR Register Fields
+#define USART_DR_DR_Pos            (0U)                           // Data value bit position
+#define USART_DR_DR_Msk            (0x1FFU << USART_DR_DR_Pos)    // Data value mask (9 bits)
+
+// USART_BRR Register Fields
+#define USART_BRR_DIV_Fraction_Pos (0U)                                     // Fraction of USARTDIV bit position
+#define USART_BRR_DIV_Fraction_Msk (0xFU << USART_BRR_DIV_Fraction_Pos)     // Fraction of USARTDIV mask (4 bits)
+
+#define USART_BRR_DIV_Mantissa_Pos (4U)                                     // Mantissa of USARTDIV bit position
+#define USART_BRR_DIV_Mantissa_Msk (0xFFFU << USART_BRR_DIV_Mantissa_Pos)   // Mantissa of USARTDIV mask (12 bits)
+
+// USART_CR1 Register Fields
+#define USART_CR1_SBK_Pos          (0U)                           // Send Break bit position
+#define USART_CR1_SBK_Msk          (1U << USART_CR1_SBK_Pos)      // Send Break mask
+
+#define USART_CR1_RWU_Pos          (1U)                           // Receiver Wakeup bit position
+#define USART_CR1_RWU_Msk          (1U << USART_CR1_RWU_Pos)      // Receiver Wakeup mask
+
+#define USART_CR1_RE_Pos           (2U)                           // Receiver Enable bit position
+#define USART_CR1_RE_Msk           (1U << USART_CR1_RE_Pos)       // Receiver Enable mask
+
+#define USART_CR1_TE_Pos           (3U)                           // Transmitter Enable bit position
+#define USART_CR1_TE_Msk           (1U << USART_CR1_TE_Pos)       // Transmitter Enable mask
+
+#define USART_CR1_IDLEIE_Pos       (4U)                           // IDLE Interrupt Enable bit position
+#define USART_CR1_IDLEIE_Msk       (1U << USART_CR1_IDLEIE_Pos)   // IDLE Interrupt Enable mask
+
+#define USART_CR1_RXNEIE_Pos       (5U)                           // RXNE Interrupt Enable bit position
+#define USART_CR1_RXNEIE_Msk       (1U << USART_CR1_RXNEIE_Pos)   // RXNE Interrupt Enable mask
+
+#define USART_CR1_TCIE_Pos         (6U)                           // Transmission Complete Interrupt Enable bit position
+#define USART_CR1_TCIE_Msk         (1U << USART_CR1_TCIE_Pos)     // Transmission Complete Interrupt Enable mask
+
+#define USART_CR1_TXEIE_Pos        (7U)                           // TXE Interrupt Enable bit position
+#define USART_CR1_TXEIE_Msk        (1U << USART_CR1_TXEIE_Pos)    // TXE Interrupt Enable mask
+
+#define USART_CR1_PEIE_Pos         (8U)                           // PE Interrupt Enable bit position
+#define USART_CR1_PEIE_Msk         (1U << USART_CR1_PEIE_Pos)     // PE Interrupt Enable mask
+
+#define USART_CR1_PS_Pos           (9U)                           // Parity Selection bit position
+#define USART_CR1_PS_Msk           (1U << USART_CR1_PS_Pos)       // Parity Selection mask
+
+#define USART_CR1_PCE_Pos          (10U)                          // Parity Control Enable bit position
+#define USART_CR1_PCE_Msk          (1U << USART_CR1_PCE_Pos)      // Parity Control Enable mask
+
+#define USART_CR1_WAKE_Pos         (11U)                          // Wakeup method bit position
+#define USART_CR1_WAKE_Msk         (1U << USART_CR1_WAKE_Pos)     // Wakeup method mask
+
+#define USART_CR1_M_Pos            (12U)                          // Word length bit position
+#define USART_CR1_M_Msk            (1U << USART_CR1_M_Pos)        // Word length mask
+
+#define USART_CR1_UE_Pos           (13U)                          // USART Enable bit position
+#define USART_CR1_UE_Msk           (1U << USART_CR1_UE_Pos)       // USART Enable mask
+
+// USART_CR2 Register Fields
+#define USART_CR2_ADD_Pos          (0U)                           // Address of the USART node bit position
+#define USART_CR2_ADD_Msk          (0xFU << USART_CR2_ADD_Pos)    // Address of the USART node mask (4 bits)
+
+#define USART_CR2_LBDL_Pos         (5U)                           // LIN Break Detection Length bit position
+#define USART_CR2_LBDL_Msk         (1U << USART_CR2_LBDL_Pos)     // LIN Break Detection Length mask
+
+#define USART_CR2_LBDIE_Pos        (6U)                           // LIN Break Detection Interrupt Enable bit position
+#define USART_CR2_LBDIE_Msk        (1U << USART_CR2_LBDIE_Pos)    // LIN Break Detection Interrupt Enable mask
+
+#define USART_CR2_LBCL_Pos         (8U)                           // Last Bit Clock pulse bit position
+#define USART_CR2_LBCL_Msk         (1U << USART_CR2_LBCL_Pos)     // Last Bit Clock pulse mask
+
+#define USART_CR2_CPHA_Pos         (9U)                           // Clock Phase bit position
+#define USART_CR2_CPHA_Msk         (1U << USART_CR2_CPHA_Pos)     // Clock Phase mask
+
+#define USART_CR2_CPOL_Pos         (10U)                          // Clock Polarity bit position
+#define USART_CR2_CPOL_Msk         (1U << USART_CR2_CPOL_Pos)     // Clock Polarity mask
+
+#define USART_CR2_CLKEN_Pos        (11U)                          // Clock Enable bit position
+#define USART_CR2_CLKEN_Msk        (1U << USART_CR2_CLKEN_Pos)    // Clock Enable mask
+
+#define USART_CR2_STOP_Pos         (12U)                          // STOP bits bit position
+#define USART_CR2_STOP_Msk         (0x3U << USART_CR2_STOP_Pos)   // STOP bits mask (2 bits)
+
+#define USART_CR2_LINEN_Pos        (14U)                          // LIN mode Enable bit position
+#define USART_CR2_LINEN_Msk        (1U << USART_CR2_LINEN_Pos)    // LIN mode Enable mask
+
+// USART_CR3 Register Fields
+#define USART_CR3_EIE_Pos          (0U)                           // Error Interrupt Enable bit position
+#define USART_CR3_EIE_Msk          (1U << USART_CR3_EIE_Pos)      // Error Interrupt Enable mask
+
+#define USART_CR3_IREN_Pos         (1U)                           // IrDA mode Enable bit position
+#define USART_CR3_IREN_Msk         (1U << USART_CR3_IREN_Pos)     // IrDA mode Enable mask
+
+#define USART_CR3_IRLP_Pos         (2U)                           // IrDA Low-Power bit position
+#define USART_CR3_IRLP_Msk         (1U << USART_CR3_IRLP_Pos)     // IrDA Low-Power mask
+
+#define USART_CR3_HDSEL_Pos        (3U)                           // Half-Duplex Selection bit position
+#define USART_CR3_HDSEL_Msk        (1U << USART_CR3_HDSEL_Pos)    // Half-Duplex Selection mask
+
+#define USART_CR3_NACK_Pos         (4U)                           // Smartcard NACK Enable bit position
+#define USART_CR3_NACK_Msk         (1U << USART_CR3_NACK_Pos)     // Smartcard NACK Enable mask
+
+#define USART_CR3_SCEN_Pos         (5U)                           // Smartcard mode Enable bit position
+#define USART_CR3_SCEN_Msk         (1U << USART_CR3_SCEN_Pos)     // Smartcard mode Enable mask
+
+#define USART_CR3_DMAR_Pos         (6U)                           // DMA Enable Receiver bit position
+#define USART_CR3_DMAR_Msk         (1U << USART_CR3_DMAR_Pos)     // DMA Enable Receiver mask
+
+#define USART_CR3_DMAT_Pos         (7U)                           // DMA Enable Transmitter bit position
+#define USART_CR3_DMAT_Msk         (1U << USART_CR3_DMAT_Pos)     // DMA Enable Transmitter mask
+
+#define USART_CR3_RTSE_Pos         (8U)                           // RTS Enable bit position
+#define USART_CR3_RTSE_Msk         (1U << USART_CR3_RTSE_Pos)     // RTS Enable mask
+
+#define USART_CR3_CTSE_Pos         (9U)                           // CTS Enable bit position
+#define USART_CR3_CTSE_Msk         (1U << USART_CR3_CTSE_Pos)     // CTS Enable mask
+
+#define USART_CR3_CTSIE_Pos        (10U)                          // CTS Interrupt Enable bit position
+#define USART_CR3_CTSIE_Msk        (1U << USART_CR3_CTSIE_Pos)    // CTS Interrupt Enable mask
+
+#define USART_CR3_ONEBIT_Pos       (11U)                          // One sample bit method Enable bit position
+#define USART_CR3_ONEBIT_Msk       (1U << USART_CR3_ONEBIT_Pos)   // One sample bit method Enable mask
+
+// USART_GTPR Register Fields
+#define USART_GTPR_PSC_Pos         (0U)                           // Prescaler value bit position
+#define USART_GTPR_PSC_Msk         (0xFFU << USART_GTPR_PSC_Pos)  // Prescaler value mask (8 bits)
+
+#define USART_GTPR_GT_Pos          (8U)                           // Guard time value bit position
+#define USART_GTPR_GT_Msk          (0xFFU << USART_GTPR_GT_Pos)   // Guard time value mask (8 bits)
+
 /*--------------------------SPI BIT FIELD POSITION AND MASK DEFINITIONS-------------------------------*/
 // SPI_CR1 Register Fields
 #define SPI_CR1_CPHA_Pos           (0U)                           // Clock Phase bit position
