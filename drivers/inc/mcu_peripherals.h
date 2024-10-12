@@ -22,6 +22,8 @@
 //APB1
 #define SPI2_BASE_ADDR    0x40003800u
 #define SPI3_BASE_ADDR    0x40003C00u
+#define USART2_BASE_ADDR  0x40004400u
+#define USART3_BASE_ADDR  0x40004800u
 
 
 //APB2
@@ -31,7 +33,8 @@
 #define GPIOD_BASE_ADDR   0x40011400u
 #define EXTI_BASE_ADDR    0x40010400u
 #define AFIO_BASE_ADDR    0x40010000u
-#define SPI1_BASE_ADDR    0x40013000u  
+#define SPI1_BASE_ADDR    0x40013000u
+#define USART1_BASE_ADDR  0x40013800u
 
 //AHB
 #define RCC_BASE_ADDR      0x40021000u
@@ -91,6 +94,16 @@ typedef struct {
     __vo uint32_t I2SPR;      // SPI_I2S Prescaler Register
 } SPI_t;
 
+typedef struct {
+    __vo uint32_t SR;         // Status register
+    __vo uint32_t DR;         // Data register
+    __vo uint32_t BRR;        // Baud rate register
+    __vo uint32_t CR1;        // Control register 1
+    __vo uint32_t CR2;        // Control register 2
+    __vo uint32_t CR3;        // Control register 3
+    __vo uint32_t GTPR;       // Guard time and prescaler register
+} USART_t;
+
 //peripherals
 #define GPIOA   ((GPIO_t *const)GPIOA_BASE_ADDR) 
 #define GPIOB   ((GPIO_t *const)GPIOB_BASE_ADDR) 
@@ -100,6 +113,10 @@ typedef struct {
 #define SPI1    ((SPI_t *const)SPI1_BASE_ADDR)
 #define SPI2    ((SPI_t *const)SPI2_BASE_ADDR)
 #define SPI3    ((SPI_t *const)SPI3_BASE_ADDR)
+
+#define USART1   ((USART_t *const)USART1_BASE_ADDR)
+#define USART2   ((USART_t *const)USART2_BASE_ADDR)
+#define USART3   ((USART_t *const)USART3_BASE_ADDR)
 
 #define EXTI    ((EXTI_t *const)EXTI_BASE_ADDR)
 #define AFIO    ((AFIO_t *const)AFIO_BASE_ADDR)
