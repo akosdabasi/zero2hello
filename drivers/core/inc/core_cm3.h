@@ -392,25 +392,25 @@ typedef struct
 } SysTick_t;
 
 /* SysTick Control / Status Register Definitions */
-#define SysTick_CTRL_COUNTFLAG_Pos         16U                                            
-#define SysTick_CTRL_COUNTFLAG_Msk         (1UL << SysTick_CTRL_COUNTFLAG_Pos)            
+#define SysTick_CSR_COUNTFLAG_Pos         16U                                            
+#define SysTick_CSR_COUNTFLAG_Msk         (1UL << SysTick_CSR_COUNTFLAG_Pos)            
 
-#define SysTick_CTRL_CLKSOURCE_Pos          2U                                            
-#define SysTick_CTRL_CLKSOURCE_Msk         (1UL << SysTick_CTRL_CLKSOURCE_Pos)            
+#define SysTick_CSR_CLKSOURCE_Pos          2U                                            
+#define SysTick_CSR_CLKSOURCE_Msk         (1UL << SysTick_CSR_CLKSOURCE_Pos)            
 
-#define SysTick_CTRL_TICKINT_Pos            1U                                            
-#define SysTick_CTRL_TICKINT_Msk           (1UL << SysTick_CTRL_TICKINT_Pos)              
+#define SysTick_CSR_TICKINT_Pos            1U                                            
+#define SysTick_CSR_TICKINT_Msk           (1UL << SysTick_CSR_TICKINT_Pos)              
 
-#define SysTick_CTRL_ENABLE_Pos             0U                                            
-#define SysTick_CTRL_ENABLE_Msk            (1UL << SysTick_CTRL_ENABLE_Pos)           
+#define SysTick_CSR_ENABLE_Pos             0U                                            
+#define SysTick_CSR_ENABLE_Msk            (1UL << SysTick_CSR_ENABLE_Pos)           
 
 /* SysTick Reload Value Register Definitions */
-#define SysTick_LOAD_RELOAD_Pos             0U                                         
-#define SysTick_LOAD_RELOAD_Msk            (0xFFFFFFUL << SysTick_LOAD_RELOAD_Pos)    
+#define SysTick_RVR_RELOAD_Pos             0U                                         
+#define SysTick_RVR_RELOAD_Msk            (0xFFFFFFUL << SysTick_RVR_RELOAD_Pos)    
 
 /* SysTick Current Value Register Definitions */
-#define SysTick_VAL_CURRENT_Pos             0U                                         
-#define SysTick_VAL_CURRENT_Msk            (0xFFFFFFUL << SysTick_VAL_CURRENT_Pos) 
+#define SysTick_CVR_CURRENT_Pos             0U                                         
+#define SysTick_CVR_CURRENT_Msk            (0xFFFFFFUL << SysTick_CVR_CURRENT_Pos) 
 
 /* SysTick Calibration Register Definitions */
 #define SysTick_CALIB_NOREF_Pos            31U                                            

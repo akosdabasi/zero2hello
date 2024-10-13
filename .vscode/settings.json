@@ -59,6 +59,7 @@
     "_stdint.h": "c",
     "_default_types.h": "c",
     "rcc_driver.h": "c",
-    "exti_driver.h": "c"
+    "exti_driver.h": "c",
+    "rcc_clk_cfg.h": "c"
   }
 }

@@ -79,7 +79,7 @@ struct spi_handle_t;
 typedef void (*spi_callback_t)(struct spi_handle_t *const hspi, spi_event_t event); 
 
 // Handle for SPI instance (e.g., SPI1, SPI2, etc.)
-typedef struct spi_handle_t{
+typedef struct spi_handle_t {
     SPI_t    *instance;      // Pointer to the SPI peripheral (e.g., SPI1, SPI2)
     SPI_Config_t     *cfg;      // Configuration parameters
     /*interrupt handling*/

@@ -16,12 +16,88 @@ typedef enum {
   CLOCK_HSI = 0,  // High-speed internal clock
   CLOCK_HSE = 1,  // High-speed external clock
   CLOCK_PLL = 2   // Phase-locked loop
-} clk_src_t;
+} rcc_sysclk_src_t;
+
+//prescalers
+typedef enum {
+  RCC_AHB_PRESCALER_DIV1   = 0x0,  // SYSCLK not divided
+  RCC_AHB_PRESCALER_DIV2   = 0x8,  // SYSCLK divided by 2
+  RCC_AHB_PRESCALER_DIV4   = 0x9,  // SYSCLK divided by 4
+  RCC_AHB_PRESCALER_DIV8   = 0xA,  // SYSCLK divided by 8
+  RCC_AHB_PRESCALER_DIV16  = 0xB,  // SYSCLK divided by 16
+  RCC_AHB_PRESCALER_DIV64  = 0xC,  // SYSCLK divided by 64
+  RCC_AHB_PRESCALER_DIV128 = 0xD,  // SYSCLK divided by 128
+  RCC_AHB_PRESCALER_DIV256 = 0xE,  // SYSCLK divided by 256
+  RCC_AHB_PRESCALER_DIV512 = 0xF   // SYSCLK divided by 512
+} rcc_ahb_prescaler_t;
+
+typedef enum {
+  RCC_APB1_PRESCALER_DIV1  = 0x0,  // HCLK not divided
+  RCC_APB1_PRESCALER_DIV2  = 0x4,  // HCLK divided by 2
+  RCC_APB1_PRESCALER_DIV4  = 0x5,  // HCLK divided by 4
+  RCC_APB1_PRESCALER_DIV8  = 0x6,  // HCLK divided by 8
+  RCC_APB1_PRESCALER_DIV16 = 0x7   // HCLK divided by 16
+} rcc_apb1_prescaler_t;
+
+typedef enum {
+  RCC_APB2_PRESCALER_DIV1  = 0x0,  // HCLK not divided
+  RCC_APB2_PRESCALER_DIV2  = 0x4,  // HCLK divided by 2
+  RCC_APB2_PRESCALER_DIV4  = 0x5,  // HCLK divided by 4
+  RCC_APB2_PRESCALER_DIV8  = 0x6,  // HCLK divided by 8
+  RCC_APB2_PRESCALER_DIV16 = 0x7   // HCLK divided by 16
+} rcc_apb2_prescaler_t;
+
+typedef enum {
+  RCC_ADC_PRESCALER_DIV2 = 0x0,  // PCLK2 divided by 2
+  RCC_ADC_PRESCALER_DIV4 = 0x1,  // PCLK2 divided by 4
+  RCC_ADC_PRESCALER_DIV6 = 0x2,  // PCLK2 divided by 6
+  RCC_ADC_PRESCALER_DIV8 = 0x3   // PCLK2 divided by 8
+} rcc_adc_prescaler_t;
+
+typedef enum {
+  RCC_PLL_MUL2  = 0x0,  // PLL input clock * 2
+  RCC_PLL_MUL3  = 0x1,  // PLL input clock * 3
+  RCC_PLL_MUL4  = 0x2,  // PLL input clock * 4
+  RCC_PLL_MUL5  = 0x3,  // PLL input clock * 5
+  RCC_PLL_MUL6  = 0x4,  // PLL input clock * 6
+  RCC_PLL_MUL7  = 0x5,  // PLL input clock * 7
+  RCC_PLL_MUL8  = 0x6,  // PLL input clock * 8
+  RCC_PLL_MUL9  = 0x7,  // PLL input clock * 9
+  RCC_PLL_MUL10 = 0x8,  // PLL input clock * 10
+  RCC_PLL_MUL11 = 0x9,  // PLL input clock * 11
+  RCC_PLL_MUL12 = 0xA,  // PLL input clock * 12
+  RCC_PLL_MUL13 = 0xB,  // PLL input clock * 13
+  RCC_PLL_MUL14 = 0xC,  // PLL input clock * 14
+  RCC_PLL_MUL15 = 0xD,  // PLL input clock * 15
+  RCC_PLL_MUL16 = 0xE   // PLL input clock * 16
+} rcc_pll_mul_t;
+
+typedef enum {
+  RCC_PLL_SRC_HSI_DIV_2,
+  RCC_PLL_SRC_HSE,
+  RCC_PLL_SRC_HSE_DIV_2
+} rcc_pll_src_t;
 
 //RCC functions
-void rcc_cfg_sysclk(clk_src_t clk_src);   //selects the system clock source
-void rcc_cfg_systick(uint32_t tick_ms);   //configures the system timer to trigger at every tick_ms ms 
-//todo: setting prescalers
+//functions for configuring clocks
+void rcc_cfg_pll(rcc_pll_src_t pll_src, rcc_pll_mul_t pll_mul);
+void rcc_cfg_sysclk(rcc_sysclk_src_t clk_src);   //selects the system clock source
+void rcc_cfg_adc_prescalers(rcc_adc_prescaler_t adc_prsclr);
+void rcc_cfg_ahb_prescalers(rcc_ahb_prescaler_t ahb_prsclr);
+void rcc_cfg_apb1_prescalers(rcc_apb1_prescaler_t apb1_prsclr);
+void rcc_cfg_apb2_prescalers(rcc_apb2_prescaler_t apb2_prsclr);
+
+//functions for calculating clocks
+uint32_t rcc_get_pllclk();
+uint32_t rcc_get_sysclk();
+uint32_t rcc_get_hclk();
+uint32_t rcc_get_pclk1();
+uint32_t rcc_get_pclk2();
+
+//system timer configuration
+//tick_ms: duration of a system tick
+void rcc_cfg_systick(uint32_t tick_period_ms);   //configures the system timer to trigger at every tick_ms ms 
+
 //todo: enable/disable/clear clock interrupts
 
 

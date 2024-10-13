@@ -25,15 +25,15 @@
  */
 static inline uint32_t SysTick_Config(uint32_t nticks)
 {
-  if ((nticks - 1UL) > SysTick_LOAD_RELOAD_Msk)
+  if ((nticks - 1UL) > SysTick_RVR_RELOAD_Msk)
   {
     return (1UL);                                                             /* Reload value impossible */
   }
 
   SysTick->RVR  = (uint32_t)(nticks - 1UL);                                   /* set reload register */
   SysTick->CVR   = 0UL;                                                       /* Load the SysTick Counter Value */
-  SysTick->CSR  =  (SysTick_CLKSOURCE << SysTick_CTRL_CLKSOURCE_Pos) |
-                   SysTick_CTRL_TICKINT_Msk   |
-                   SysTick_CTRL_ENABLE_Msk;                                   /* Enable SysTick IRQ and SysTick Timer */
+  SysTick->CSR  =  (SysTick_CLKSOURCE << SysTick_CSR_CLKSOURCE_Pos) |
+                   SysTick_CSR_TICKINT_Msk   |
+                   SysTick_CSR_ENABLE_Msk;                                   /* Enable SysTick IRQ and SysTick Timer */
   return (0UL);                                                               /* Function successful */
 }

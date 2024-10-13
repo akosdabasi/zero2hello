@@ -43,12 +43,53 @@ typedef struct {
   usart_data_length_t data_length;
   usart_parity_t parity;
 
-} USART_Cfg_t;
+} USART_Config_t;
 
-typedef struct {
+typedef enum {
+  USART_EVENT_BYTE_RECEIVED = 0,
+  USART_EVENT_BYTE_SENT,
+  USART_EVENT_TRANS_COMPLETE,
+  USART_EVENT_OVR_ERR,
+  USART_EVENT_CRC_ERR
+} usart_event_t;
+
+//forward declaration
+struct usart_handle_t;
+
+//usart event callback function
+typedef void (*usart_callback_t)(struct usart_handle_t *const husart, usart_event_t event); 
+
+typedef struct usart_handle_t{
   USART_t *instance;
-  USART_Cfg_t *cfg;
+  USART_Config_t *cfg;
 } usart_handle_t;
+
+//global usart handlers
+extern usart_handle_t husart1;
+extern usart_handle_t husart2;
+extern usart_handle_t husart3;
+
+void usart_get_default_cfg(USART_Config_t *pCfg);
+
+//control
+void usart_clk_enable(usart_handle_t *const husart);
+void usart_clk_disable(usart_handle_t *const husart);
+void usart_reset(usart_handle_t *const husart);
+
+void usart_init(usart_handle_t *const husart);
 
 static inline void usart_send_break(USART_t *const pusart ){SET_BIT(pusart->CR1, USART_CR1_SBK_Pos);}
 static inline void usart_mute(USART_t *const pusart ){SET_BIT(pusart->CR1, USART_CR1_RWU_Pos);}
+
+//blocking transmit/receive functions
+void usart_transmit(usart_handle_t *const husart, uint8_t *data, uint8_t length);
+void usart_receive(usart_handle_t *const husart, uint8_t *data, uint8_t length);
+
+
+/*----------------- INTERRUPT HANDLING -----------------------*/
+//interrupt driven mode (non-blocking)
+void usart_nvic_enable_it(usart_handle_t* husart);
+void usart_nvic_disable_it(usart_handle_t* husart);
+void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t length);
+void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t length);
+void usart_register_cb(usart_handle_t *const husart, usart_callback_t cb);
