@@ -66,8 +66,9 @@ typedef enum {
   USART_EVENT_BYTE_RECEIVED = 0,
   USART_EVENT_BYTE_SENT,
   USART_EVENT_TRANS_COMPLETE,
-  USART_EVENT_OVR_ERR,
-  USART_EVENT_CRC_ERR
+  USART_EVENT_OVE_ERR,
+  USART_EVENT_PE_ERR,
+  USART_EVENT_IDLE_RECEIVED
 } usart_event_t;
 
 //forward declaration
@@ -79,6 +80,12 @@ typedef void (*usart_callback_t)(struct usart_handle_t *const husart, usart_even
 typedef struct usart_handle_t{
   USART_t *instance;
   USART_Config_t *cfg;
+  uint8_t *tx_buffer;
+  uint8_t  tx_buffer_length;
+  uint8_t *rx_buffer;
+  uint8_t  rx_buffer_length;
+  uint8_t  rx_bytes_left;
+  usart_callback_t cb;
 } usart_handle_t;
 
 //global usart handlers
@@ -109,5 +116,7 @@ void usart_receive(usart_handle_t *const husart, uint8_t *data, uint8_t length);
 void usart_nvic_enable_it(usart_handle_t* husart);
 void usart_nvic_disable_it(usart_handle_t* husart);
 void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t length);
-void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t length);
+void usart_receive_it(usart_handle_t *const husart, uint8_t *data, uint8_t length);
 void usart_register_cb(usart_handle_t *const husart, usart_callback_t cb);
+
+//TODO: hw-flow control, automatically enabling/disabling rx/tx, error counter

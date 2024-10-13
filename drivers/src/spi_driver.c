@@ -413,3 +413,13 @@ void SPI1_IRQHandler(void)
 {
   SPIx_IRQHandler(&hspi1);
 }
+
+void SPI2_IRQHandler(void)
+{
+  SPIx_IRQHandler(&hspi2);
+}
+
+void SPI3_IRQHandler(void)
+{
+  SPIx_IRQHandler(&hspi3);
+}
