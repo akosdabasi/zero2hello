@@ -15,7 +15,7 @@ typedef enum {
 } usart_data_length_t;
 
 typedef enum {
-  USART_PARITY_DISABLED = 0,
+  USART_PARITY_NONE = 0,
   USART_PARITY_EVEN = 1,
   USART_PARITY_ODD = 2,
 }usart_parity_t;
@@ -39,10 +39,27 @@ typedef enum {
   USART_WAKEUP_ADDRESS = 1,
 } usart_wakeup_t;
 
+typedef enum {
+  USART_OVERSAMPLING_8 = 0,
+  USART_OVERSAMPLING_16 = 1,
+} usart_oversampling_t;
+
+typedef enum {
+  USART_BAUDRATE_9600 = 9600,
+  USART_BAUDRATE_19200 = 19200,
+  USART_BAUDRATE_38400 = 38400,
+  USART_BAUDRATE_115200 = 115200,
+} usart_baudrate_t;
+
 typedef struct {
+  usart_mode_t mode;
   usart_data_length_t data_length;
   usart_parity_t parity;
-
+  usart_stop_bits_t stop_bits;
+  usart_oversampling_t oversampl;
+  usart_baudrate_t baudrate;
+  usart_hw_flow_ctrl_t hw_flow_ctrl;
+  usart_wakeup_t wakeup;
 } USART_Config_t;
 
 typedef enum {
@@ -69,6 +86,7 @@ extern usart_handle_t husart1;
 extern usart_handle_t husart2;
 extern usart_handle_t husart3;
 
+//return the most common configuration
 void usart_get_default_cfg(USART_Config_t *pCfg);
 
 //control

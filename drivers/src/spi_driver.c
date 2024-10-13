@@ -107,6 +107,7 @@ void spi_clk_enable(spi_handle_t *const hspi)
     /*invalid instance*/
   }
 }
+
 void spi_clk_disable(spi_handle_t *const hspi)
 {
   if(!hspi || !hspi->instance)return;
@@ -130,6 +131,7 @@ void spi_clk_disable(spi_handle_t *const hspi)
     /*invalid instance*/
   }
 }
+
 void spi_reset(spi_handle_t *const hspi)
 {
   if(!hspi || !hspi->instance)return;
