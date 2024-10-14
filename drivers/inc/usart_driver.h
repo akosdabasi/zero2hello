@@ -3,17 +3,32 @@
 #include "mcu_peripherals.h"
 #include "rcc_driver.h"
 
+//events
+typedef enum {
+  USART_EVENT_BYTE_RECEIVED = 0,
+  USART_EVENT_BYTE_SENT,
+  USART_EVENT_TRANS_COMPLETE,
+  USART_EVENT_RECEPTION_COMPLETE,
+  USART_EVENT_OVE_ERR,
+  USART_EVENT_PE_ERR,
+  USART_EVENT_IDLE_RECEIVED
+} usart_event_t;
+
+//configuration enum definitons
+//TODO: handle TX/RX only mode
 typedef enum {
   USART_MODE_RX = 0,             
   USART_MODE_TX = 1,             
   USART_MODE_TX_RX = 2
 } usart_mode_t;
 
+//TODO: handle 9bit mode
 typedef enum {
   USART_DATA_LENGTH_8 = 0,
   USART_DATA_LENGTH_9 = 1
 } usart_data_length_t;
 
+//TODO: handle parity
 typedef enum {
   USART_PARITY_NONE = 0,
   USART_PARITY_EVEN = 1,
@@ -27,6 +42,8 @@ typedef enum {
   USART_STOP_BITS_1_5 = 3,
 } usart_stop_bits_t;
 
+//TODO: synchronous mode
+//TODO: handle hardware-flow control
 typedef enum {
   USART_HW_FLOWCTRL_NONE = 0,
   USART_HW_FLOWCTRL_RTS = 1,
@@ -34,6 +51,7 @@ typedef enum {
   USART_HW_FLOWCTRL_RTS_CTS = 3,
 } usart_hw_flow_ctrl_t;
 
+//TODO: handle wakeup
 typedef enum {
   USART_WAKEUP_IDLE = 0,
   USART_WAKEUP_ADDRESS = 1,
@@ -44,6 +62,7 @@ typedef enum {
   USART_OVERSAMPLING_16 = 1,
 } usart_oversampling_t;
 */
+
 typedef enum {
   USART_BAUDRATE_9600 = 9600,
   USART_BAUDRATE_19200 = 19200,
@@ -51,6 +70,7 @@ typedef enum {
   USART_BAUDRATE_115200 = 115200,
 } usart_baudrate_t;
 
+//usart configuration structure
 typedef struct {
   usart_mode_t mode;
   usart_data_length_t data_length;
@@ -62,22 +82,13 @@ typedef struct {
   usart_wakeup_t wakeup;
 } USART_Config_t;
 
-typedef enum {
-  USART_EVENT_BYTE_RECEIVED = 0,
-  USART_EVENT_BYTE_SENT,
-  USART_EVENT_TRANS_COMPLETE,
-  USART_EVENT_RECEPTION_COMPLETE,
-  USART_EVENT_OVE_ERR,
-  USART_EVENT_PE_ERR,
-  USART_EVENT_IDLE_RECEIVED
-} usart_event_t;
-
 //forward declaration
 struct usart_handle_t;
 
 //usart event callback function
 typedef void (*usart_callback_t)(struct usart_handle_t *const husart, usart_event_t event); 
 
+//usart handle structure definition
 typedef struct usart_handle_t{
   USART_t *instance;
   USART_Config_t *cfg;
@@ -97,14 +108,19 @@ extern usart_handle_t husart3;
 //return the most common configuration
 void usart_get_default_cfg(USART_Config_t *pCfg);
 
-//control
+//basic control functions
 void usart_clk_enable(usart_handle_t *const husart);
 void usart_clk_disable(usart_handle_t *const husart);
 void usart_reset(usart_handle_t *const husart);
 
+//initialized SPI peripheral instance
+//GPIO: gpio pins have to be configured seperately
 void usart_init(usart_handle_t *const husart);
 
 static inline void usart_send_break(USART_t *const pusart ){SET_BIT(pusart->CR1, USART_CR1_SBK_Pos);}
+
+//puts the usart peripheral in mute state
+//it can be woken up by idle or the appropriate address message
 static inline void usart_mute(USART_t *const pusart ){SET_BIT(pusart->CR1, USART_CR1_RWU_Pos);}
 
 //blocking transmit/receive functions

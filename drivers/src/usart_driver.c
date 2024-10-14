@@ -41,38 +41,6 @@ usart_handle_t husart1 = {.instance = USART1, .cfg = &usart1_cfg};
 usart_handle_t husart2 = {.instance = USART2, .cfg = &usart2_cfg};
 usart_handle_t husart3 = {.instance = USART3, .cfg = &usart3_cfg};
 
-//default event handler
-static void usart_default_cb(usart_handle_t *const husart, usart_event_t event)
-{
-  /*switch (event)
-  {
-  case USART_EVENT_BYTE_RECEIVED:
-    // code 
-    break;
-  case USART_EVENT_BYTE_SENT:
-    // code
-    break;
-  case USART_EVENT_TRANS_COMPLETE:
-    // code
-    break;
-  case USART_EVENT_OVE_ERR:
-    // code 
-    break;
-  case USART_EVENT_PE_ERR:
-    // code
-    break;
-  case USART_EVENT_IDLE_RECEIVED:
-    // code
-    break;
-  default:
-    // invalid event
-      break;
-  }
-  */
- (void)husart;
- (void)event;
-}
-
 void usart_get_default_cfg(USART_Config_t *pCfg)
 {
   if(!pCfg)return;
@@ -181,26 +149,29 @@ void usart_init(usart_handle_t *const husart)
   CLEAR_BITFIELD(pUSART->CR2, USART_CR2_STOP_Msk);
   pUSART->CR2 |= (pCfg->stop_bits << USART_CR2_STOP_Pos);
 
-  if(!husart->cb)
-  {
-    husart->cb = usart_default_cb;
-  }
-
   //configuring the baudrate
   uint32_t fck = husart == &husart1 ? rcc_get_pclk2() : rcc_get_pclk1();
   uint32_t div_100 = fck*100/16/pCfg->baudrate;
   uint32_t div_mantissa = div_100/100;
   uint32_t div_fraction = (((div_100-(div_mantissa*100))*16)+50)/100;
-  //carry
-  if(div_fraction == 16)div_mantissa++;
+
+  if(div_fraction == 16)div_mantissa++;    //carry
+  
   CLEAR_BITFIELD(pUSART->BRR, USART_BRR_DIV_Mantissa_Msk | USART_BRR_DIV_Fraction_Msk);
   pUSART->BRR |= ((div_mantissa & 0x0FFFu) << USART_BRR_DIV_Mantissa_Pos) | (div_mantissa & 0x0Fu);
 
-  USART_ENABLE_RX(pUSART);
-  USART_ENABLE_TX(pUSART);
   //todo hardware flow control 
   //todo synchronous mode
-  //USART_ENABLE(pUSART);
+  
+  //usart mode
+  /*if(pCfg->mode == USART_MODE_TX_RX || pCfg->mode == USART_MODE_TX)
+  {
+    USART_ENABLE_TX(pUSART);
+  }
+  if(pCfg->mode == USART_MODE_TX_RX || pCfg->mode == USART_MODE_RX)
+  {
+    USART_ENABLE_RX(pUSART);
+  }*/
 }
 
 void usart_transmit(usart_handle_t *const husart, uint8_t *data, uint8_t length)
@@ -214,6 +185,7 @@ void usart_transmit(usart_handle_t *const husart, uint8_t *data, uint8_t length)
 
 
   USART_ENABLE(pUSART);
+  USART_ENABLE_TX(pUSART);
 
   for (uint8_t i = 0; i < length; i++)
   {
@@ -226,7 +198,8 @@ void usart_transmit(usart_handle_t *const husart, uint8_t *data, uint8_t length)
 
   // wait until the transmission is complete 
   while (!USART_GET_TC(pUSART));  
-  
+
+  USART_DISABLE_TX(pUSART);
 }
 
 void usart_receive(usart_handle_t *const husart, uint8_t *data, uint8_t length)
@@ -239,6 +212,7 @@ void usart_receive(usart_handle_t *const husart, uint8_t *data, uint8_t length)
   //usart_parity_t data_length = husart->cfg->parity;
 
   USART_ENABLE(pUSART);
+  USART_ENABLE_RX(pUSART);
 
   for (uint8_t i = 0; i < length; i++)
   {
@@ -248,8 +222,12 @@ void usart_receive(usart_handle_t *const husart, uint8_t *data, uint8_t length)
     // Read the received data from the data register (DR)
     data[i] = (uint8_t)(pUSART->DR);
   }
+
+  USART_DISABLE_RX(pUSART);
 }
 
+
+//interrupt mode (non-blocking)
 void usart_nvic_enable_it(usart_handle_t* husart)
 {
   if(husart == &husart1)
@@ -301,6 +279,9 @@ void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t leng
   //enable peripheral
   USART_ENABLE(pUSART);
 
+  //enable TX line
+  USART_ENABLE_TX(pUSART);
+
   //enable interrupts
   USART_ENABLE_TX_IT(pUSART);
 }
@@ -325,6 +306,9 @@ void usart_receive_it(usart_handle_t *const husart, uint8_t *data, uint8_t lengt
   //enable peripheral
   USART_ENABLE(pUSART);
 
+  //enable RX line
+  USART_ENABLE_RX(pUSART);
+
   //enable interrupts
   USART_ENABLE_RX_IT(pUSART);
 }
@@ -346,15 +330,22 @@ static inline void usart_handle_txe_it(usart_handle_t *husart)
     husart->tx_buffer_length--;
     
     //call event handler
-    husart->cb(husart, USART_EVENT_BYTE_SENT);
+    if(husart->cb)
+    {
+      husart->cb(husart, USART_EVENT_BYTE_SENT);
+    }
   }
   else
   {
     //end transmission
     USART_DISABLE_TX_IT(pUSART);
+    USART_DISABLE_TX(pUSART);
 
     //call user callback with received data
-    husart->cb(husart, USART_EVENT_TRANS_COMPLETE);
+    if(husart->cb)
+    {
+      husart->cb(husart, USART_EVENT_TRANS_COMPLETE);
+    }
 
     //reset tx buffer
     husart->tx_buffer = NULL;
@@ -372,15 +363,22 @@ static inline void usart_handle_rxne_it(usart_handle_t *husart)
   if(husart->rx_bytes_left > 0)
   {
     //call user callback with received data
-    husart->cb(husart, USART_EVENT_BYTE_RECEIVED);
+    if(husart->cb)
+    {
+      husart->cb(husart, USART_EVENT_BYTE_RECEIVED);
+    }
   }
   else
   {
     //end reception
     USART_DISABLE_RX_IT(pUSART);
+    USART_DISABLE_RX(pUSART);
 
     //call user callback with received data
-    husart->cb(husart, USART_EVENT_RECEPTION_COMPLETE);
+    if(husart->cb)
+    {
+      husart->cb(husart, USART_EVENT_RECEPTION_COMPLETE);
+    }
 
     //reset rx buffer
     husart->rx_buffer = NULL;

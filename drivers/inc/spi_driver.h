@@ -64,6 +64,7 @@ typedef enum {
   SPI_BAUDRATE_DIV256 = 7
 } spi_baudrate_t;
 
+//spi configuration structure
 typedef struct {
     spi_mode_t       mode;         // Master or slave mode
     spi_trans_mode_t trans_mode;   // Transmission mode
@@ -100,6 +101,7 @@ extern spi_handle_t hspi1;
 extern spi_handle_t hspi2;
 extern spi_handle_t hspi3;
 
+//return the most common configuration
 void spi_get_default_cfg(SPI_Config_t *pCfg);
 
 //basic control functions

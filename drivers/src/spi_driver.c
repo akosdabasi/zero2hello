@@ -209,6 +209,8 @@ void spi_transcieve(spi_handle_t *const hspi, uint8_t *const data_tx, uint8_t *c
   SPI_DISABLE(pSPI);
 }
 
+
+//interrupt mode (non-blocking)
 void spi_nvic_enable_it(spi_handle_t *const hspi)
 {
   if(hspi == &hspi1)
@@ -282,7 +284,6 @@ void spi_register_cb(spi_handle_t *const hspi, spi_callback_t cb)
   hspi->cb = cb;
 }
 
-
 static inline void spi_handle_txe_it(spi_handle_t *const hspi)
 {
   SPI_t *pSPI = hspi->instance;
@@ -319,7 +320,7 @@ static inline void spi_handle_rxne_it(spi_handle_t *const hspi)
   //get the arrived data
   hspi->rx_buffer[hspi->rx_buffer_length++] = (uint8_t)pSPI->DR;
   hspi->rx_bytes_left--;
-  
+
   if(hspi->rx_bytes_left > 0)
   { 
     //call user callback with received data
