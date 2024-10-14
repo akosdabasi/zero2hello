@@ -5,7 +5,7 @@
 #include "rcc_driver.h"
 
 
-
+//global instance
 extern AFIO_t *const pAFIO;
 
 typedef enum {
@@ -50,10 +50,9 @@ static inline void afio_clk_enable(){RCC_APB2ENR_AFIO_CLK_ENABLE();}
 static inline void afio_clk_disable(){RCC_APB2ENR_AFIO_CLK_DISABLE();}
 static inline void afio_clk_reset(){RCC_APB2RSTR_AFIO_RESET();}
 
+//EVENTOUT signal configuration
 static inline void afio_en_EVENTOUT(){SET_BIT(pAFIO->EVCR, AFIO_EVCR_EVOE_Pos);}
-
 static inline void afio_dis_EVENTOUT(){CLEAR_BIT(pAFIO->EVCR, AFIO_EVCR_EVOE_Pos);}
-
 void afio_sel_EVENTOUT_pin(gpio_port_t port ,gpio_pin_t pin);
 
 //remapping

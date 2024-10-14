@@ -59,7 +59,7 @@ typedef enum {
 #define GET_BIT(word, pos)                ((word >> pos) & 1u)
 #define CLEAR_BIT(word, pos)              (word &= ~(1u << pos))
 #define TOGGLE_BIT(word, pos)             (word ^= (1u << pos))
-#define EN_DIS_BIT(word, pos, enable)     ({if (enable) {SET_BIT(word, pos);} else {CLEAR_BIT(word, pos);}})
+#define EN_DIS_BIT(word, pos, enable)     ((word) = (word & ~(1 << pos)) | (enable << pos))
 
 #define GET_BITFIELD(word, mask, pos)     (((uint32_t)word & mask) >> pos)
 #define CLEAR_BITFIELD(word, mask)        (word &= (~(uint32_t)mask))
