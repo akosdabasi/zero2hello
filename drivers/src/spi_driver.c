@@ -32,35 +32,6 @@ spi_handle_t hspi1 = { .instance = SPI1, .cfg = &spi1_cfg};
 spi_handle_t hspi2 = { .instance = SPI2, .cfg = &spi2_cfg};
 spi_handle_t hspi3 = { .instance = SPI3, .cfg = &spi3_cfg};
 
-//default event handler
-static void spi_default_cb(spi_handle_t *const hspi, spi_event_t event)
-{
-  /*switch (event)
-  {
-  case SPI_EVENT_BYTE_RECEIVED:
-    // code 
-    break;
-  case SPI_EVENT_BYTE_SENT:
-    // code
-    break;
-  case SPI_EVENT_TRANS_COMPLETE:
-    // code
-    break;
-  case SPI_EVENT_OVR_ERR:
-    // code 
-    break;
-  case SPI_EVENT_CRC_ERR:
-    // code
-    break;
-  default:
-    // invalid event
-      break;
-  }
-  */
- (void)hspi;
- (void)event;
-}
-
 //resets the crc counters
 static void spi_reset_crc(SPI_t *const pSPI)
 {
@@ -183,18 +154,12 @@ void spi_init(spi_handle_t *const hspi)
   //set baudrate
   CLEAR_BITFIELD(pSPI->CR1, SPI_CR1_BR_Msk);
   pSPI->CR1 |= ((pCfg->baudrate << SPI_CR1_BR_Pos) & SPI_CR1_BR_Msk);
-  
-  //set default event handler
-  if(!hspi->cb)
-  {
-    hspi->cb = spi_default_cb;
-  }
 }
 
 
 //polling mode (blocking)
 //full-duplex
-void spi_transcieve(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data_rx, uint16_t size)
+void spi_transcieve(spi_handle_t *const hspi, uint8_t *const data_tx, uint8_t *const data_rx, uint16_t length)
 {
   //error checking
   if(!hspi || !hspi->instance || !hspi->cfg || !data_tx || !data_rx)return;
@@ -217,7 +182,7 @@ void spi_transcieve(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data_rx
   //write first byte to Tx buffer to initiate transmission
   pSPI->DR = data_tx[byte_idx_tx++];
 
-  while(byte_idx_tx < size)
+  while(byte_idx_tx < length)
   {
     //wait until Tx buffer is empty again and load the next byte
     while(!SPI_GET_TXE(pSPI));
@@ -241,11 +206,10 @@ void spi_transcieve(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data_rx
   while(!SPI_GET_TXE(pSPI));
   while(SPI_GET_BSY(pSPI));
 
-
   SPI_DISABLE(pSPI);
 }
 
-void spi_nvic_enable_it(spi_handle_t* hspi)
+void spi_nvic_enable_it(spi_handle_t *const hspi)
 {
   if(hspi == &hspi1)
   {
@@ -261,7 +225,7 @@ void spi_nvic_enable_it(spi_handle_t* hspi)
   }
 }
 
-void spi_nvic_disable_it(spi_handle_t* hspi)
+void spi_nvic_disable_it(spi_handle_t *const hspi)
 {
   if(hspi == &hspi1)
   {
@@ -277,7 +241,7 @@ void spi_nvic_disable_it(spi_handle_t* hspi)
   }
 }
 
-void spi_transcieve_it(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data_rx, uint16_t size)
+void spi_transcieve_it(spi_handle_t *const hspi, uint8_t *const data_tx, uint8_t *const data_rx, uint16_t length)
 {
   //if one of the pointers is a null pointer then return
   if(!hspi || !hspi->instance || !data_tx || !data_rx )return;
@@ -288,10 +252,10 @@ void spi_transcieve_it(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data
 
   //set handle members
   hspi->tx_buffer = data_tx;
-  hspi->tx_buffer_length = size;
+  hspi->tx_buffer_length = length;
   hspi->rx_buffer = data_rx;
   hspi->rx_buffer_length = 0;
-  hspi->rx_bytes_left = SPI_GET_CRCEN(pSPI) ? size+1 : size; 
+  hspi->rx_bytes_left = SPI_GET_CRCEN(pSPI) ? length+1 : length; 
 
   //reset crc
   if(SPI_GET_CRCEN(pSPI))
@@ -308,7 +272,7 @@ void spi_transcieve_it(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data
   //enable interrupts
   SPI_ENABLE_RX_IT(pSPI);
   SPI_ENABLE_TX_IT(pSPI);
-  //SPI_ENABLE_ERR_IT(pSPI);
+  SPI_ENABLE_ERR_IT(pSPI);
 }
 
 void spi_register_cb(spi_handle_t *const hspi, spi_callback_t cb)
@@ -319,8 +283,7 @@ void spi_register_cb(spi_handle_t *const hspi, spi_callback_t cb)
 }
 
 
-
-static inline void spi_handle_txe_it(spi_handle_t *hspi)
+static inline void spi_handle_txe_it(spi_handle_t *const hspi)
 {
   SPI_t *pSPI = hspi->instance;
   if(hspi->tx_buffer_length > 0)
@@ -335,8 +298,11 @@ static inline void spi_handle_txe_it(spi_handle_t *hspi)
       SET_BIT(pSPI->CR1, SPI_CR1_CRCNEXT_Pos);
     }
 
-    //call event handler
-    hspi->cb(hspi, SPI_EVENT_BYTE_SENT);
+    //call event handler if it's registered
+    if(hspi->cb)
+    {
+      hspi->cb(hspi, SPI_EVENT_BYTE_SENT);
+    }
   }
   else
   {
@@ -346,15 +312,20 @@ static inline void spi_handle_txe_it(spi_handle_t *hspi)
   }
 }
 
-static inline void spi_handle_rxne_it(spi_handle_t *hspi)
+static inline void spi_handle_rxne_it(spi_handle_t *const hspi)
 {
   SPI_t *pSPI = hspi->instance;
-
+    
   //get the arrived data
   hspi->rx_buffer[hspi->rx_buffer_length++] = (uint8_t)pSPI->DR;
   hspi->rx_bytes_left--;
-    
-  if(!hspi->rx_bytes_left)
+  
+  if(hspi->rx_bytes_left > 0)
+  { 
+    //call user callback with received data
+    hspi->cb(hspi, SPI_EVENT_BYTE_RECEIVED);
+  }
+  else
   {
     //end reception
     SPI_DISABLE_RX_IT(pSPI);
@@ -366,14 +337,9 @@ static inline void spi_handle_rxne_it(spi_handle_t *hspi)
     hspi->rx_buffer = NULL;
     hspi->rx_buffer_length = 0;
   }
-  else
-  {
-    //call user callback with received data
-    hspi->cb(hspi, SPI_EVENT_BYTE_RECEIVED);
-  }
 }
 
-static inline void SPIx_IRQHandler(spi_handle_t *hspi)
+static inline void SPIx_IRQHandler(spi_handle_t *const hspi)
 {
   if(!hspi || !hspi->instance)return;
 

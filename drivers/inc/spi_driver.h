@@ -5,7 +5,7 @@
 
 #define CRC_DEFAULT_POLY    0x0007u  //default crc polynomial
 
-
+//events
 typedef enum {
   SPI_EVENT_BYTE_RECEIVED = 0,
   SPI_EVENT_BYTE_SENT,
@@ -14,50 +14,54 @@ typedef enum {
   SPI_EVENT_CRC_ERR
 } spi_event_t;
 
+//configuration enum definitions
+//TODO: handling multi-master mode
 typedef enum {
-    SPI_MODE_SLAVE  = 0,
-    SPI_MODE_MASTER = 1
+  SPI_MODE_SLAVE  = 0,
+  SPI_MODE_MASTER = 1
 } spi_mode_t;
 
+//TODO: handling half-duplex, simplex communication modes
 typedef enum {
-    SPI_TRANS_MODE_FULLDUPLEX = 0,
-    SPI_TRANS_MODE_HALFDUPLEX = 1
+  SPI_TRANS_MODE_FULLDUPLEX = 0,
+  SPI_TRANS_MODE_HALFDUPLEX = 1
 } spi_trans_mode_t;
 
 typedef enum {
-    SPI_CPOL_LOW  = 0,  // Clock polarity low when idle
-    SPI_CPOL_HIGH = 1   // Clock polarity high when idle
+  SPI_CPOL_LOW  = 0,  // Clock polarity low when idle
+  SPI_CPOL_HIGH = 1   // Clock polarity high when idle
 } spi_cpol_t;
 
 typedef enum {
-    SPI_CPHA_LEAD_EDGE = 0,  // Data sampled on leading clock edge
-    SPI_CPHA_TRAIL_EDGE = 1   // Data sampled on trailing clock edge
+  SPI_CPHA_LEAD_EDGE = 0,  // Data sampled on leading clock edge
+  SPI_CPHA_TRAIL_EDGE = 1   // Data sampled on trailing clock edge
 } spi_cpha_t;
 
+//TODO: handling 16bit datasize
 typedef enum {
-    SPI_DATASIZE_8BIT  = 0,
-    SPI_DATASIZE_16BIT = 1
+  SPI_DATASIZE_8BIT  = 0,
+  SPI_DATASIZE_16BIT = 1
 } spi_datasize_t;
 
 typedef enum {
-    SPI_NSS_HARD = 0,   // Hardware control of NSS pin
-    SPI_NSS_SOFT = 1    // Software control of NSS pin
+  SPI_NSS_HARD = 0,   // Hardware control of NSS pin
+  SPI_NSS_SOFT = 1    // Software control of NSS pin
 } spi_nss_mode_t;
 
 typedef enum {
-    SPI_BIT_ORDER_MSB = 0,  // Software control of NSS pin
-    SPI_BIT_ORDER_LSB = 1   // Hardware control of NSS pin
+  SPI_BIT_ORDER_MSB = 0,  // Software control of NSS pin
+  SPI_BIT_ORDER_LSB = 1   // Hardware control of NSS pin
 } spi_bit_order_t;
 
 typedef enum {
-    SPI_BAUDRATE_DIV2   = 0,
-    SPI_BAUDRATE_DIV4   = 1,
-    SPI_BAUDRATE_DIV8   = 2,
-    SPI_BAUDRATE_DIV16  = 3,
-    SPI_BAUDRATE_DIV32  = 4,
-    SPI_BAUDRATE_DIV64  = 5,
-    SPI_BAUDRATE_DIV128 = 6,
-    SPI_BAUDRATE_DIV256 = 7
+  SPI_BAUDRATE_DIV2   = 0,
+  SPI_BAUDRATE_DIV4   = 1,
+  SPI_BAUDRATE_DIV8   = 2,
+  SPI_BAUDRATE_DIV16  = 3,
+  SPI_BAUDRATE_DIV32  = 4,
+  SPI_BAUDRATE_DIV64  = 5,
+  SPI_BAUDRATE_DIV128 = 6,
+  SPI_BAUDRATE_DIV256 = 7
 } spi_baudrate_t;
 
 typedef struct {
@@ -75,20 +79,20 @@ typedef struct {
 //forward declaration of spi_handle_t
 struct spi_handle_t;
 
-// callback function for interrupt processing
+//callback function for interrupt processing
 typedef void (*spi_callback_t)(struct spi_handle_t *const hspi, spi_event_t event); 
 
-// Handle for SPI instance (e.g., SPI1, SPI2, etc.)
+//spi handle structure definiton
 typedef struct spi_handle_t {
-    SPI_t    *instance;      // Pointer to the SPI peripheral (e.g., SPI1, SPI2)
-    SPI_Config_t     *cfg;      // Configuration parameters
+    SPI_t *instance;      //pointer to the SPI peripheral (e.g., SPI1, SPI2)
+    SPI_Config_t *cfg;    //configuration parameters
     /*interrupt handling*/
     uint8_t *tx_buffer;
     uint16_t tx_buffer_length;
     uint8_t *rx_buffer;
     uint16_t rx_buffer_length;
     uint16_t rx_bytes_left;
-    spi_callback_t  cb;      // Optional callback for interrupt handling
+    spi_callback_t  cb;   //optional callback for interrupt handling
 } spi_handle_t;
 
 //global spi handlers
@@ -98,7 +102,7 @@ extern spi_handle_t hspi3;
 
 void spi_get_default_cfg(SPI_Config_t *pCfg);
 
-//control
+//basic control functions
 void spi_clk_enable(spi_handle_t *const hspi);
 void spi_clk_disable(spi_handle_t *const hspi);
 void spi_reset(spi_handle_t *const hspi);
@@ -121,16 +125,16 @@ static inline void spi_set_ssoe(spi_handle_t *const hspi, uint8_t ssoe){EN_DIS_B
 //configure receive-only mode in full-duplex communication
 static inline void spi_set_rxonly(spi_handle_t *const hspi, uint8_t rxonly){EN_DIS_BIT(hspi->instance->CR1, SPI_CR1_RXONLY_Pos, rxonly);}
 
-//status
+//get busy status flag
 static inline uint8_t spi_is_busy(spi_handle_t *const hspi){return (uint8_t)GET_BIT(hspi->instance->SR, SPI_SR_BSY_Pos);}
 
 //polling mode (blocking)
 //full-duplex
-void spi_transcieve(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data_rx, uint16_t size);
+void spi_transcieve(spi_handle_t *const hspi, uint8_t *const data_tx, uint8_t *const data_rx, uint16_t length);
 
 /*----------------- INTERRUPT HANDLING -----------------------*/
 //interrupt driven mode (non-blocking)
-void spi_nvic_enable_it(spi_handle_t* hspi);
-void spi_nvic_disable_it(spi_handle_t* hspi);
-void spi_transcieve_it(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data_rx, uint16_t size);
+void spi_nvic_enable_it(spi_handle_t *const hspi);
+void spi_nvic_disable_it(spi_handle_t *const hspi);
+void spi_transcieve_it(spi_handle_t *const hspi, uint8_t *const data_tx, uint8_t *const data_rx, uint16_t length);
 void spi_register_cb(spi_handle_t *const hspi, spi_callback_t cb);
