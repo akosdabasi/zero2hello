@@ -228,6 +228,8 @@ void gpio_cfg_irq(gpio_port_t port, gpio_pin_t pin, exti_trigger_t trigger, gpio
     exti15_10_isr_cb = cb;
   }
 
+  afio_clk_enable();
+  
   //attach pin to exti line in afio
   afio_attach_port_to_exti_line(port, line);
 
@@ -308,6 +310,18 @@ void EXTI0_IRQHandler(void)
     if(exti0_4_isr_cbs[line0])
     {
       exti0_4_isr_cbs[line0]();
+    }
+  }
+}
+
+void EXTI15_10_IRQHandler(void)
+{
+  if(exti_get_pend_stat(line10))
+  {
+    exti_clear_pend(line10);
+    if(exti15_10_isr_cb)
+    {
+      exti15_10_isr_cb();
     }
   }
 }

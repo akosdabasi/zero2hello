@@ -77,7 +77,7 @@ void usart_get_default_cfg(USART_Config_t *pCfg)
   pCfg->data_length = USART_DATA_LENGTH_8;      
   pCfg->parity = USART_PARITY_NONE;     
   pCfg->stop_bits = USART_STOP_BITS_1;  
-  pCfg->oversampl = USART_OVERSAMPLING_8;  
+  //pCfg->oversampl = USART_OVERSAMPLING_16;  
   pCfg->baudrate = USART_BAUDRATE_9600;            
   pCfg->hw_flow_ctrl = USART_HW_FLOWCTRL_NONE;    //no hardware flow control
   pCfg->wakeup = USART_WAKEUP_IDLE;
@@ -181,8 +181,22 @@ void usart_init(usart_handle_t *const husart)
   {
     husart->cb = usart_default_cb;
   }
+
+  //configuring the baudrate
+  uint32_t fck = husart == &husart1 ? rcc_get_pclk2() : rcc_get_pclk1();
+  uint32_t div_100 = fck*100/16/pCfg->baudrate;
+  uint32_t div_mantissa = div_100/100;
+  uint32_t div_fraction = (((div_100-(div_mantissa*100))*16)+50)/100;
+  //carry
+  if(div_fraction == 16)div_mantissa++;
+  CLEAR_BITFIELD(pUSART->BRR, USART_BRR_DIV_Mantissa_Msk | USART_BRR_DIV_Fraction_Msk);
+  pUSART->BRR |= ((div_mantissa & 0x0FFFu) << USART_BRR_DIV_Mantissa_Pos) | (div_mantissa & 0x0Fu);
+
+  USART_ENABLE_RX(pUSART);
+  USART_ENABLE_TX(pUSART);
   //todo hardware flow control 
   //todo synchronous mode
+  //USART_ENABLE(pUSART);
 }
 
 void usart_transmit(usart_handle_t *const husart, uint8_t *data, uint8_t length)

@@ -39,11 +39,11 @@ typedef enum {
   USART_WAKEUP_ADDRESS = 1,
 } usart_wakeup_t;
 
-typedef enum {
+/*typedef enum {
   USART_OVERSAMPLING_8 = 0,
   USART_OVERSAMPLING_16 = 1,
 } usart_oversampling_t;
-
+*/
 typedef enum {
   USART_BAUDRATE_9600 = 9600,
   USART_BAUDRATE_19200 = 19200,
@@ -56,7 +56,7 @@ typedef struct {
   usart_data_length_t data_length;
   usart_parity_t parity;
   usart_stop_bits_t stop_bits;
-  usart_oversampling_t oversampl;
+  //usart_oversampling_t oversampl;
   usart_baudrate_t baudrate;
   usart_hw_flow_ctrl_t hw_flow_ctrl;
   usart_wakeup_t wakeup;

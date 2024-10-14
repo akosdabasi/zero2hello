@@ -88,7 +88,56 @@ void config_spi1_to_slave()
   hspi1.cfg = &spi_cfg;
 }
 
+/*---------------------USART--------------------------*/
+void config_usart2()
+{
+  //PA2 - TX
+  GPIO_PinConfig_t tx_cfg;
+  tx_cfg.mode = MODE_OUT_2MHz;
+  tx_cfg.sub_mode = SUBMODE_OUT_ALT_PP;
 
+  //PA3 - RX
+  GPIO_PinConfig_t rx_cfg;
+  rx_cfg.mode = MODE_IN;
+  rx_cfg.sub_mode = SUBMODE_IN_FLOAT;
+
+  //configure gpio pins
+  gpio_clk_enable(GPIOA);
+  gpio_set_mode(GPIOA, 2, &tx_cfg);
+  gpio_set_mode(GPIOA, 3, &rx_cfg);
+
+  //configure usart
+  USART_Config_t usart_cfg;
+  usart_get_default_cfg(&usart_cfg); //use default configuration
+
+  husart2.cfg = &usart_cfg;
+}
+
+void config_usart3()
+{
+  //PB10 - TX
+  GPIO_PinConfig_t tx_cfg;
+  tx_cfg.mode = MODE_OUT_2MHz;
+  tx_cfg.sub_mode = SUBMODE_OUT_ALT_PP;
+
+  //PB11 - RX
+  GPIO_PinConfig_t rx_cfg;
+  rx_cfg.mode = MODE_IN;
+  rx_cfg.sub_mode = SUBMODE_IN_FLOAT;
+
+  //configure gpio pins
+  gpio_clk_enable(GPIOB);
+  gpio_set_mode(GPIOB, 10, &tx_cfg);
+  gpio_set_mode(GPIOB, 11, &rx_cfg);
+
+  //configure usart
+  USART_Config_t usart_cfg;
+  usart_get_default_cfg(&usart_cfg); //use default configuration
+
+  husart3.cfg = &usart_cfg;
+}
+
+/*-------------------------LED---------------------------*/
 void config_pin_to_led(GPIO_t *pgpio, gpio_pin_t pin)
 {
   //LED
@@ -105,8 +154,8 @@ void config_pin_to_button_it(GPIO_t *pgpio, gpio_pin_t pin, gpio_callback_t cb)
 {
   //BUTTON
   GPIO_PinConfig_t btn_cfg;
-  btn_cfg.mode = MODE_OUT_2MHz;
-  btn_cfg.sub_mode = SUBMODE_OUT_GP_PP;
+  btn_cfg.mode = MODE_IN;
+  btn_cfg.sub_mode = SUBMODE_IN_FLOAT;
 
   //configure gpio pins
   gpio_clk_enable(pgpio);

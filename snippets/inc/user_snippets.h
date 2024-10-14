@@ -5,7 +5,7 @@
 #include "rcc_driver.h"
 #include "afio_driver.h"
 #include "spi_driver.h"
-
+#include "usart_driver.h"
 
 #include "user_snippets.h"
 
@@ -22,6 +22,9 @@ void config_pin_to_button_it(GPIO_t *pgpio, gpio_pin_t pin, gpio_callback_t cb);
 void config_spi1_to_master();
 void config_spi1_to_slave();
 
+/*---------------------USART--------------------------*/
+void config_usart2();
+void config_usart3();
 
 /*----------------- COMMON --------------------------*/
 void zero_array(uint8_t *arr, uint16_t length);
