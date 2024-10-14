@@ -203,30 +203,18 @@ uint8_t gpio_lock_port(GPIO_t *const pGPIO, uint16_t pins)
 /*---------------------------- INTERRUPT HANDLING ---------------------------------*/
 
 //internal callback functions for ISRs
-static gpio_callback_t exti0_4_isr_cbs[5];
-static gpio_callback_t exti9_5_isr_cb;
-static gpio_callback_t exti15_10_isr_cb;
+static gpio_callback_t exti_cbs[NUM_OF_EXTI_LINES];
 
 void gpio_cfg_irq(gpio_port_t port, gpio_pin_t pin, exti_trigger_t trigger, gpio_callback_t cb)
 {
   //check if we got a valid callback
   if(!cb)return;
 
+  //get corresponding exti line
   exti_line_t line = pin_to_exti_line_map[pin];
 
   //register callback to the appropriate exti line
-  if(line < 5)
-  {
-    exti0_4_isr_cbs[line] = cb;
-  }
-  else if(5 <= line && line <= 9)
-  {
-    exti9_5_isr_cb = cb;
-  }
-  else
-  {
-    exti15_10_isr_cb = cb;
-  }
+  exti_cbs[line] = cb;
 
   afio_clk_enable();
   
@@ -262,6 +250,7 @@ void gpio_en_irq(gpio_port_t port, gpio_pin_t pin)
   //port parameter is only used for readability
   (void)port; 
 
+  //get corresponding exti line
   exti_line_t line = pin_to_exti_line_map[pin];
 
   //enable interrupt generation in exti
@@ -279,6 +268,7 @@ void gpio_dis_irq(gpio_port_t port, gpio_pin_t pin)
   //port parameter is only used for readability
   (void)port; 
 
+  //get corresponding exti line
   exti_line_t line = pin_to_exti_line_map[pin];
 
   //disable interrupt generation in exti
@@ -302,26 +292,57 @@ void gpio_clear_irq_flag(gpio_port_t port, gpio_pin_t pin)
   exti_clear_pend(line);
 }
 
-void EXTI0_IRQHandler(void)
+
+//IRQ handlers
+static inline void gpio_exti_handle_it(exti_line_t line)
 {
-  if(exti_get_pend_stat(line0))
+  //check and clear if pending flag is set
+  if(exti_get_pend_stat(line))
   {
-    exti_clear_pend(line0);
-    if(exti0_4_isr_cbs[line0])
+    exti_clear_pend(line);
+    //call callback function if registered
+    if(exti_cbs[line])
     {
-      exti0_4_isr_cbs[line0]();
+      exti_cbs[line]();
     }
   }
 }
 
+void EXTI0_IRQHandler(void)
+{
+  gpio_exti_handle_it(line0);
+}
+
+void EXTI1_IRQHandler(void)
+{
+  gpio_exti_handle_it(line1);
+}
+
+void EXTI2_IRQHandler(void)
+{
+  gpio_exti_handle_it(line2);
+}
+
+void EXTI3_IRQHandler(void)
+{
+  gpio_exti_handle_it(line3);
+}
+
+void EXTI9_5_IRQHandler(void)
+{
+  gpio_exti_handle_it(line5);
+  gpio_exti_handle_it(line6);
+  gpio_exti_handle_it(line7);
+  gpio_exti_handle_it(line8);
+  gpio_exti_handle_it(line9);
+}
+
 void EXTI15_10_IRQHandler(void)
 {
-  if(exti_get_pend_stat(line10))
-  {
-    exti_clear_pend(line10);
-    if(exti15_10_isr_cb)
-    {
-      exti15_10_isr_cb();
-    }
-  }
+  gpio_exti_handle_it(line10);
+  gpio_exti_handle_it(line11);
+  gpio_exti_handle_it(line12);
+  gpio_exti_handle_it(line13);
+  gpio_exti_handle_it(line14);
+  gpio_exti_handle_it(line15);
 }

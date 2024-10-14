@@ -82,5 +82,3 @@ void gpio_cfg_irq(gpio_port_t port, gpio_pin_t pin, exti_trigger_t trigger, gpio
 void gpio_en_irq(gpio_port_t port, gpio_pin_t pin);
 void gpio_dis_irq(gpio_port_t port, gpio_pin_t pin);
 void gpio_clear_irq_flag(gpio_port_t port, gpio_pin_t pin);
-
-void EXTI0_IRQHandler(void);
