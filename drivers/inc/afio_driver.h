@@ -46,6 +46,7 @@ typedef enum {
     TIM3_FULL_REMAP = 3            // Full remap (CH1/PC6, CH2/PC7, CH3/PC8, CH4/PC9)
 } tim3_remap_t;
 
+//basic control functions
 static inline void afio_clk_enable(){RCC_APB2ENR_AFIO_CLK_ENABLE();}
 static inline void afio_clk_disable(){RCC_APB2ENR_AFIO_CLK_DISABLE();}
 static inline void afio_clk_reset(){RCC_APB2RSTR_AFIO_RESET();}
