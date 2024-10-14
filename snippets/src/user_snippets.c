@@ -34,8 +34,8 @@ void config_spi1_to_master()
   
   //PA4 - NSS
   GPIO_PinConfig_t nss_cfg;
-  mosi_cfg.mode = MODE_OUT_2MHz;
-  mosi_cfg.sub_mode = SUBMODE_OUT_ALT_PP; //nss output enabled
+  nss_cfg.mode = MODE_OUT_2MHz;
+  nss_cfg.sub_mode = SUBMODE_OUT_ALT_PP; //nss output enabled
 
   //configure gpio pins
   gpio_clk_enable(GPIOA);
@@ -45,10 +45,7 @@ void config_spi1_to_master()
   gpio_set_mode(GPIOA, 4, &nss_cfg);
 
   //configure spi
-  SPI_Config_t spi_cfg;
-  spi_get_default_cfg(&spi_cfg); //use default configuration
-
-  hspi1.cfg = &spi_cfg;
+  spi_get_default_cfg(hspi1.cfg); //use default configuration
 }
 
 void config_spi1_to_slave()
@@ -107,10 +104,7 @@ void config_usart2()
   gpio_set_mode(GPIOA, 3, &rx_cfg);
 
   //configure usart
-  USART_Config_t usart_cfg;
-  usart_get_default_cfg(&usart_cfg); //use default configuration
-
-  husart2.cfg = &usart_cfg;
+  usart_get_default_cfg(husart2.cfg); //use default configuration
 }
 
 void config_usart3()
@@ -131,10 +125,7 @@ void config_usart3()
   gpio_set_mode(GPIOB, 11, &rx_cfg);
 
   //configure usart
-  USART_Config_t usart_cfg;
-  usart_get_default_cfg(&usart_cfg); //use default configuration
-
-  husart3.cfg = &usart_cfg;
+  usart_get_default_cfg(husart3.cfg); //use default configuration
 }
 
 /*-------------------------LED---------------------------*/

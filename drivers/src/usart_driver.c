@@ -32,10 +32,14 @@
 #define USART_GET_LBD(pUSART)               GET_BIT(pUSART->SR, USART_SR_LBD_Pos)
 #define USART_GET_CTS(pUSART)               GET_BIT(pUSART->SR, USART_SR_CTS_Pos)
 
+//global usart config structures
+USART_Config_t usart1_cfg;
+USART_Config_t usart2_cfg;
+USART_Config_t usart3_cfg;
 //global usart handlers
-usart_handle_t husart1 = {.instance = USART1};
-usart_handle_t husart2 = {.instance = USART2};
-usart_handle_t husart3 = {.instance = USART3};
+usart_handle_t husart1 = {.instance = USART1, .cfg = &usart1_cfg};
+usart_handle_t husart2 = {.instance = USART2, .cfg = &usart2_cfg};
+usart_handle_t husart3 = {.instance = USART3, .cfg = &usart3_cfg};
 
 //default event handler
 static void usart_default_cb(usart_handle_t *const husart, usart_event_t event)
@@ -285,7 +289,7 @@ void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t leng
   USART_t *const pUSART = husart->instance;
 
   //if previous transmission is not finished then return
-  if(husart->rx_buffer_length || husart->tx_buffer_length)return;
+  if(husart->tx_buffer_length)return;
 
   //set handle members
   husart->tx_buffer = data;
@@ -307,8 +311,8 @@ void usart_receive_it(usart_handle_t *const husart, uint8_t *data, uint8_t lengt
   if(!husart || !husart->instance || !data )return;
   USART_t *const pUSART = husart->instance;
 
-  //if previous transmission is not finished then return
-  if(husart->rx_buffer_length || husart->tx_buffer_length)return;
+  //if previous reception is not finished then return
+  if(husart->rx_buffer_length)return;
 
   //set handle members
   husart->rx_buffer = data;
@@ -346,9 +350,14 @@ static inline void usart_handle_txe_it(usart_handle_t *husart)
   }
   else
   {
-    //end of transmission
-    husart->tx_buffer = NULL;
+    //end transmission
     USART_DISABLE_TX_IT(pUSART);
+
+    //call user callback with received data
+    husart->cb(husart, USART_EVENT_TRANS_COMPLETE);
+
+    //reset tx buffer
+    husart->tx_buffer = NULL;
   }
 }
 
@@ -360,22 +369,22 @@ static inline void usart_handle_rxne_it(usart_handle_t *husart)
   husart->rx_buffer[husart->rx_buffer_length++] = (uint8_t)pUSART->DR;
   husart->rx_bytes_left--;
     
-  if(!husart->rx_bytes_left)
+  if(husart->rx_bytes_left > 0)
+  {
+    //call user callback with received data
+    husart->cb(husart, USART_EVENT_BYTE_RECEIVED);
+  }
+  else
   {
     //end reception
     USART_DISABLE_RX_IT(pUSART);
 
     //call user callback with received data
-    husart->cb(husart, USART_EVENT_TRANS_COMPLETE);
+    husart->cb(husart, USART_EVENT_RECEPTION_COMPLETE);
 
     //reset rx buffer
     husart->rx_buffer = NULL;
     husart->rx_buffer_length = 0;
-  }
-  else
-  {
-    //call user callback with received data
-    husart->cb(husart, USART_EVENT_BYTE_RECEIVED);
   }
 }
 

@@ -25,12 +25,16 @@ void usartEventHandler(usart_handle_t *const husart, usart_event_t event)
     usart_trans_done = 1;
     (void)husart;
   }
+  else if(event == USART_EVENT_RECEPTION_COMPLETE)
+  {
+    usart_transmit_it(&husart2, husart2.rx_buffer, husart2.rx_buffer_length);
+  }
 }
 
 void buttonEventHandler()
 {
   usart_transmit_it(&husart2, tx_data, 12u);
-  usart_transmit_it(&husart3, tx_data, 12u);
+  spi_transcieve_it(&hspi1, tx_data, rx_data, 12u);
 }
 
 int main(void) 
@@ -44,19 +48,11 @@ int main(void)
   spi_init(&hspi1); //init SPI1
   spi_set_ssoe(&hspi1, enabled); //automatic SSN managment
   spi_register_cb(&hspi1, spiEventHandler);
-  spi_nvic_enable_it(&hspi1);
 
   /*USART2 config*/
   config_usart2();
   usart_init(&husart2);
   usart_register_cb(&husart2, usartEventHandler);
-  usart_nvic_enable_it(&husart2);
-
-  /*USART3 config*/
-  config_usart3();
-  usart_init(&husart3);
-  usart_register_cb(&husart3, usartEventHandler);
-  usart_nvic_enable_it(&husart3);
   
   /*button config*/
   config_pin_to_button_it(GPIOC, 10, buttonEventHandler);
@@ -64,17 +60,11 @@ int main(void)
   //usart_transmit(&husart2, tx_data, 12u);
   //spi_transcieve_it(&hspi1, &tx_data[0], &rx_data[0], (uint16_t)10u);
   //(void)rx_data;
+  
 
   while(1)
   {
-    if(usart_trans_done)
-    {
-      while (1)
-      {
-        /* code */
-      }
-      
-    }
+    usart_receive_it(&husart2, rx_data, 1u);
   }
 
   return 0;

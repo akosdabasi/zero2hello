@@ -23,10 +23,14 @@
 #define SPI_GET_ERRIE(pSPI)   GET_BIT(pSPI->CR2, SPI_CR2_ERRIE_Pos)
 #define SPI_GET_CRCEN(pSPI)   GET_BIT(pSPI->CR1, SPI_CR1_CRCEN_Pos)
 
+//global spi config structures
+SPI_Config_t spi1_cfg;
+SPI_Config_t spi2_cfg;
+SPI_Config_t spi3_cfg;
 //global spi handlers
-spi_handle_t hspi1 = { .instance = SPI1};
-spi_handle_t hspi2 = { .instance = SPI2};
-spi_handle_t hspi3 = { .instance = SPI3};
+spi_handle_t hspi1 = { .instance = SPI1, .cfg = &spi1_cfg};
+spi_handle_t hspi2 = { .instance = SPI2, .cfg = &spi2_cfg};
+spi_handle_t hspi3 = { .instance = SPI3, .cfg = &spi3_cfg};
 
 //default event handler
 static void spi_default_cb(spi_handle_t *const hspi, spi_event_t event)
@@ -280,7 +284,7 @@ void spi_transcieve_it(spi_handle_t *const hspi, uint8_t *data_tx, uint8_t *data
   SPI_t *const pSPI = hspi->instance;
 
   //if previous transmission is not finished then return
-  if(hspi->rx_buffer_length || hspi->tx_buffer_length)return;
+  if(hspi->rx_bytes_left || hspi->tx_buffer_length)return;
 
   //set handle members
   hspi->tx_buffer = data_tx;
@@ -350,11 +354,10 @@ static inline void spi_handle_rxne_it(spi_handle_t *hspi)
   hspi->rx_buffer[hspi->rx_buffer_length++] = (uint8_t)pSPI->DR;
   hspi->rx_bytes_left--;
     
-  if(!hspi->tx_buffer && !hspi->rx_bytes_left)
+  if(!hspi->rx_bytes_left)
   {
     //end reception
     SPI_DISABLE_RX_IT(pSPI);
-    SPI_DISABLE(pSPI);
 
     //call user callback with received data
     hspi->cb(hspi, SPI_EVENT_TRANS_COMPLETE);
