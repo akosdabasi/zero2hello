@@ -28,7 +28,7 @@ typedef unsigned long long int uint64_t;// Unsigned 64-bit integer
 typedef void (*isr_callback_t)(void);
 
 //null pointer
-#define NULL (void*)0;
+#define NULL ((void*)0);
 
 //type modifier defines for memmory mapped peripheral registers
 #define __vo volatile

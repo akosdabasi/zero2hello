@@ -3,6 +3,19 @@
 #include "mcu_peripherals.h"
 #include "rcc_driver.h"
 
+#define USART_GET_RXNEIE(pUSART)            GET_BIT(pUSART->CR1, USART_CR1_RXNEIE_Pos)
+#define USART_GET_TXEIE(pUSART)             GET_BIT(pUSART->CR1, USART_CR1_TXEIE_Pos)
+#define USART_GET_OVE(pUSART)               GET_BIT(pUSART->SR, USART_SR_ORE_Pos)
+#define USART_GET_FE(pUSART)                GET_BIT(pUSART->SR, USART_SR_FE_Pos)
+#define USART_GET_NE(pUSART)                GET_BIT(pUSART->SR, USART_SR_NE_Pos)
+#define USART_GET_PE(pUSART)                GET_BIT(pUSART->SR, USART_SR_PE_Pos)
+#define USART_GET_IDLE(pUSART)              GET_BIT(pUSART->SR, USART_SR_IDLE_Pos)
+#define USART_GET_TXE(pUSART)               GET_BIT(pUSART->SR, USART_SR_TXE_Pos)
+#define USART_GET_TC(pUSART)                GET_BIT(pUSART->SR, USART_SR_TC_Pos)
+#define USART_GET_RXNE(pUSART)              GET_BIT(pUSART->SR, USART_SR_RXNE_Pos)
+#define USART_GET_LBD(pUSART)               GET_BIT(pUSART->SR, USART_SR_LBD_Pos)
+#define USART_GET_CTS(pUSART)               GET_BIT(pUSART->SR, USART_SR_CTS_Pos)
+
 //events
 typedef enum {
   USART_EVENT_BYTE_RECEIVED = 0,
@@ -132,6 +145,14 @@ void usart_receive(usart_handle_t *const husart, uint8_t *data, uint8_t length);
 //interrupt driven mode (non-blocking)
 void usart_nvic_enable_it(usart_handle_t* husart);
 void usart_nvic_disable_it(usart_handle_t* husart);
+
+void usart_enable_it_tx(usart_handle_t* husart);
+void usart_disable_it_tx(usart_handle_t* husart);
+
+void usart_enable_it_rx(usart_handle_t* husart);
+void usart_disable_it_rx(usart_handle_t* husart);
+
+
 void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t length);
 void usart_receive_it(usart_handle_t *const husart, uint8_t *data, uint8_t length);
 void usart_register_cb(usart_handle_t *const husart, usart_callback_t cb);

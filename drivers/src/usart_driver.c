@@ -19,19 +19,6 @@
 #define USART_DISABLE_TCIE_IT(pUSART)       CLEAR_BIT(pUSART->CR1, USART_CR1_TCIE_Pos)
 #define USART_DISABLE_IDLEIE_IT(pUSART)     CLEAR_BIT(pUSART->CR1, USART_CR1_IDLEIE_Pos)
 
-#define USART_GET_RXNEIE(pUSART)            GET_BIT(pUSART->CR1, USART_CR1_RXNEIE_Pos)
-#define USART_GET_TXEIE(pUSART)             GET_BIT(pUSART->CR1, USART_CR1_TXEIE_Pos)
-#define USART_GET_OVE(pUSART)               GET_BIT(pUSART->SR, USART_SR_OVE_Pos)
-#define USART_GET_FE(pUSART)                GET_BIT(pUSART->SR, USART_SR_FE_Pos)
-#define USART_GET_NE(pUSART)                GET_BIT(pUSART->SR, USART_SR_NE_Pos)
-#define USART_GET_PE(pUSART)                GET_BIT(pUSART->SR, USART_SR_PE_Pos)
-#define USART_GET_IDLE(pUSART)              GET_BIT(pUSART->SR, USART_SR_IDLE_Pos)
-#define USART_GET_TXE(pUSART)               GET_BIT(pUSART->SR, USART_SR_TXE_Pos)
-#define USART_GET_TC(pUSART)                GET_BIT(pUSART->SR, USART_SR_TC_Pos)
-#define USART_GET_RXNE(pUSART)              GET_BIT(pUSART->SR, USART_SR_RXNE_Pos)
-#define USART_GET_LBD(pUSART)               GET_BIT(pUSART->SR, USART_SR_LBD_Pos)
-#define USART_GET_CTS(pUSART)               GET_BIT(pUSART->SR, USART_SR_CTS_Pos)
-
 //global usart config structures
 USART_Config_t usart1_cfg;
 USART_Config_t usart2_cfg;
@@ -260,6 +247,35 @@ void usart_nvic_disable_it(usart_handle_t* husart)
   }
 }
 
+void usart_enable_it_tx(usart_handle_t* husart)
+{
+  //if one of the pointers is a null pointer then return
+  if(!husart || !husart->instance)return;
+  USART_ENABLE_TX_IT(husart->instance);
+}
+
+void usart_disable_it_tx(usart_handle_t* husart)
+{
+  //if one of the pointers is a null pointer then return
+  if(!husart || !husart->instance)return;
+  USART_DISABLE_TX_IT(husart->instance);
+}
+
+void usart_enable_it_rx(usart_handle_t* husart)
+{
+  //if one of the pointers is a null pointer then return
+  if(!husart || !husart->instance)return;
+  USART_ENABLE_RX_IT(husart->instance);
+}
+
+void usart_disable_it_rx(usart_handle_t* husart)
+{
+  //if one of the pointers is a null pointer then return
+  if(!husart || !husart->instance)return;
+  USART_DISABLE_RX_IT(husart->instance);
+
+}
+
 void usart_transmit_it(usart_handle_t *const husart, uint8_t *data, uint8_t length)
 {
   //if one of the pointers is a null pointer then return
@@ -403,7 +419,7 @@ static inline void USARTx_IRQHandler(usart_handle_t *husart)
   //TODO: error handling
   
 }
-
+/*
 void USART1_IRQHandler(void)
 {
   USARTx_IRQHandler(&husart1);
@@ -418,3 +434,4 @@ void USART3_IRQHandler(void)
 {
   USARTx_IRQHandler(&husart3);
 }
+*/
