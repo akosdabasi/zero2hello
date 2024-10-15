@@ -125,6 +125,8 @@ void usart_get_default_cfg(USART_Config_t *pCfg);
 void usart_clk_enable(usart_handle_t *const husart);
 void usart_clk_disable(usart_handle_t *const husart);
 void usart_reset(usart_handle_t *const husart);
+void usart_start(usart_handle_t *const husart);
+void usart_stop(usart_handle_t *const husart);
 
 //initialized SPI peripheral instance
 //GPIO: gpio pins have to be configured seperately

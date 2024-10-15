@@ -62,6 +62,7 @@
     "exti_driver.h": "c",
     "rcc_clk_cfg.h": "c",
     "string.h": "c",
-    "mcu_peripherals.h": "c"
+    "mcu_peripherals.h": "c",
+    "syscalls.h": "c"
   }
 }

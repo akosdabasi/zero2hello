@@ -1,5 +1,7 @@
 #include "user_snippets.h"
 #include "rcc_clk_cfg.h"
+#include "ttys.h"
+#include "syscalls.h"
 
 //input buffer
 uint8_t rx_data[10];
@@ -37,11 +39,19 @@ int main(void)
   /*USART2 config*/
   config_usart2();
   usart_init(&husart2);
-  usart_register_cb(&husart2, usartEventHandler);
-  
+  //usart_register_cb(&husart2, usartEventHandler);
+  usart_start(&husart2);
+
+  ttys_get_def_cfg(&httys2.cfg);
+  ttys_init(&httys2);
+  ttys_start(&httys2);
+
+  const char* msg = "hello from ttys\n";
+
   while(1)
   {
-    usart_receive_it(&husart2, rx_data, 1u);
+    delay_blocking_ms(1000);
+    _write(&httys2, msg, my_strlen(msg));
   }
 
   return 0;

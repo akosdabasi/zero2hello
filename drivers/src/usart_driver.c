@@ -150,15 +150,38 @@ void usart_init(usart_handle_t *const husart)
   //todo hardware flow control 
   //todo synchronous mode
   
+}
+
+void usart_start(usart_handle_t *const husart)
+{
+  if(!husart || !husart->instance || !husart->cfg)return;
+
+  USART_t *pUSART = husart->instance;
+  USART_Config_t *pCfg = husart->cfg;
+
   //usart mode
-  /*if(pCfg->mode == USART_MODE_TX_RX || pCfg->mode == USART_MODE_TX)
+  if(pCfg->mode == USART_MODE_TX_RX || pCfg->mode == USART_MODE_TX)
   {
     USART_ENABLE_TX(pUSART);
   }
   if(pCfg->mode == USART_MODE_TX_RX || pCfg->mode == USART_MODE_RX)
   {
     USART_ENABLE_RX(pUSART);
-  }*/
+  }
+
+  USART_ENABLE(pUSART);
+}
+
+void usart_stop(usart_handle_t *const husart)
+{
+  if(!husart || !husart->instance || !husart->cfg)return;
+
+  USART_t *pUSART = husart->instance;
+
+  USART_DISABLE_TX(pUSART);
+  USART_DISABLE_RX(pUSART);
+  USART_DISABLE(pUSART);
+
 }
 
 void usart_transmit(usart_handle_t *const husart, uint8_t *data, uint8_t length)

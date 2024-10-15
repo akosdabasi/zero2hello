@@ -170,18 +170,32 @@ void zero_array(uint8_t *arr, uint16_t length)
   for(uint16_t i = 0; i < length; arr[i++] = 0);
 }
 
-int my_strcmp(const char *str1, const char *str2) {
-    // Loop through both strings
-    while (*str1 && *str2) {
-        // If characters differ, return the difference
-        if (*str1 != *str2) {
-            return 0;
-        }
-        // Move to the next character in both strings
-        str1++;
-        str2++;
-    }
+int my_strcmp(const char *str1, const char *str2)
+{
+  // Loop through both strings
+  while(*str1 && *str2)
+  {
+    // If characters differ, return
+    if(*str1 != *str2)return 0;
     
-    // If both strings are equal up to the null terminator, check if one is longer
-    return 1;
+    // Move to the next character in both strings
+    str1++;
+    str2++;
+  }
+  
+  // If both strings are equal up to the null terminator, check if one is longer
+  return 1;
+}
+
+uint32_t my_strlen(const char *str)
+{
+  uint32_t length = 0;
+
+  // Iterate through the string until the null terminator is reached
+  while (str[length] != '\0')
+  {
+    length++;
+  }
+
+  return length;
 }

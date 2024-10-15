@@ -1,4 +1,3 @@
-#include "usart_driver.h"
 #include "module.h"
 #include "_string.h"
 #include "ttys.h"
@@ -6,32 +5,6 @@
 #define UART1_FD 4
 #define UART2_FD 1
 #define UART3_FD 3
-
-//performance measurement
-typedef enum{
-    CNT_RX_UART_ORE,
-    CNT_RX_UART_NE,
-    CNT_RX_UART_FE,
-    CNT_RX_UART_PE,
-    CNT_TX_BUF_OVERRUN,
-    CNT_RX_BUF_OVERRUN,
-
-    NUM_PMS
-} ttys_pms_t;
-
-//per-instance ttys state information.
-typedef struct ttys_handle_t{
-  usart_handle_t *husart;
-  ttys_cfg_t cfg;
-  int fd;
-  uint16_t pms[NUM_PMS];
-  uint16_t rx_buf_get_idx;
-  uint16_t rx_buf_put_idx;
-  uint16_t tx_buf_get_idx;
-  uint16_t tx_buf_put_idx;
-  uint8_t tx_buf[TTYS_TX_BUF_SIZE];
-  uint8_t rx_buf[TTYS_RX_BUF_SIZE];
-} ttys_handle_t;
 
 //private variables
 //-------------------------

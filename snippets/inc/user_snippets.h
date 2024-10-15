@@ -29,3 +29,4 @@ void config_usart3();
 /*----------------- COMMON --------------------------*/
 void zero_array(uint8_t *arr, uint16_t length);
 int my_strcmp(const char *str1, const char *str2);
+uint32_t my_strlen(const char *str);
