@@ -63,6 +63,7 @@
     "rcc_clk_cfg.h": "c",
     "string.h": "c",
     "mcu_peripherals.h": "c",
-    "syscalls.h": "c"
+    "syscalls.h": "c",
+    "random": "c"
   }
 }

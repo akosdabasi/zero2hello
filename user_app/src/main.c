@@ -2,6 +2,7 @@
 #include "rcc_clk_cfg.h"
 #include "ttys.h"
 #include "syscalls.h"
+#include "console.h"
 
 //input buffer
 uint8_t rx_data[10];
@@ -46,12 +47,16 @@ int main(void)
   ttys_init(&httys2);
   ttys_start(&httys2);
 
-  const char* msg = "hello from ttys\n";
+  //const char* msg = "hello from ttys\n";
+
+  console_init();
 
   while(1)
   {
-    delay_blocking_ms(1000);
-    _write(&httys2, msg, my_strlen(msg));
+    //delay_blocking_ms(1000);
+    //_write(&httys2, msg, my_strlen(msg));
+    console_run();
+
   }
 
   return 0;
