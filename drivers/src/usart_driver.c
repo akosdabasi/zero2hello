@@ -339,7 +339,6 @@ static inline void usart_handle_txe_it(usart_handle_t *husart)
   {
     //end transmission
     USART_DISABLE_TX_IT(pUSART);
-    USART_DISABLE_TX(pUSART);
 
     //call user callback with received data
     if(husart->cb)
@@ -372,7 +371,6 @@ static inline void usart_handle_rxne_it(usart_handle_t *husart)
   {
     //end reception
     USART_DISABLE_RX_IT(pUSART);
-    USART_DISABLE_RX(pUSART);
 
     //call user callback with received data
     if(husart->cb)
