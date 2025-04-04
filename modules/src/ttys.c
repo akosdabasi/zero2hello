@@ -2,16 +2,12 @@
 #include "_string.h"
 #include "ttys.h"
 
-#define UART1_FD 4
-#define UART2_FD 1
-#define UART3_FD 3
-
 //private variables
 //-------------------------
 
-ttys_handle_t httys1 = {.husart = &husart1, .fd = 3};
-ttys_handle_t httys2 = {.husart = &husart2, .fd = 1}; //stdout
-ttys_handle_t httys3 = {.husart = &husart3, .fd = 4};
+ttys_handle_t httys1 = {.husart = &husart1};
+ttys_handle_t httys2 = {.husart = &husart2}; //stdout
+ttys_handle_t httys3 = {.husart = &husart3};
 
 //names of performance measurements.
 /*static const char* pms_names[NUM_PMS] = {
