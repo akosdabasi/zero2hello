@@ -1,70 +1,75 @@
 cmake_minimum_required(VERSION 4.0)
 
-# Setup cmake module path and compiler settings
+#specify search paths for 'include' command to look for cmake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-project(zero2hello)
-enable_language(C ASM)
-
+project(z2h)
 message("Build type: "              ${CMAKE_BUILD_TYPE})
+
+#for simpler reference and to access it in included files
+set(proj_path	${CMAKE_CURRENT_LIST_DIR})
+
+#specify the language
+enable_language(C ASM)
 set(CMAKE_C_STANDARD                11)
 set(CMAKE_C_STANDARD_REQUIRED       ON)
-set(CMAKE_TOOLCHAIN_FILE			gcc-arm-none-eabi)
 
-# Define current path for shorter reference below
-set(PROJ_PATH                       ${CMAKE_CURRENT_SOURCE_DIR})
 
+#toolchain specification
+set(CMAKE_TOOLCHAIN_FILE		gcc-arm-none-eabi)
+
+#target specification
+set(target_name                 ${CMAKE_PROJECT_NAME})
 include(source_list)
+add_executable(${target_name} ${source_list})
+
 include(include_list)
-include(STM32F103xx_HAL_PARA)
+target_include_directories(${target_name} PRIVATE ${include_list})
 
-set(linker_script_SRC               ${PROJ_PATH}/linker.ld)
-set(EXECUTABLE                      ${CMAKE_PROJECT_NAME})
+set(compiler_definitions
+	CMAKE_BUILD
+)
+target_compile_definitions(${target_name} PRIVATE ${compiler_definitions})
 
-# Executable files
-add_executable(${EXECUTABLE} ${source_list})
-
-# Include paths
-target_include_directories(${EXECUTABLE} PRIVATE ${include_list})
-
-# Project symbols
-target_compile_definitions(${EXECUTABLE} PRIVATE ${compiler_define})
-
-# Compiler options
-target_compile_options(${EXECUTABLE} PRIVATE
-	${CPU_PARAMETERS}
-	-Wall
-	-Wpedantic
-	-Wno-unused-parameter
+set(compiler_flags 
+	-fdata-sections 		#create seperate sections for data -> garbage collection
+	-ffunction-sections 	#create sperate sections for functions -> garbage collection
+	-ffreestanding 			#no operating system used
+	-mthumb					#generate code with thumb instruction set
+    -mcpu=cortex-m3			
+    -mfloat-abi=soft		#software floating point
+	-Wall					#enables the most useful warnings
+	-Wextra					#enables extra warnings
+	-Werror					#treats all warnings as errors
+	-Wshadow				#warns when local variable shadows an other variablefsa
+)
+target_compile_options(${target_name} PRIVATE
+	${compiler_flags}	
 )
 
-# Linker options
-target_link_options(${EXECUTABLE} PRIVATE
-	-T${linker_script_SRC}
-	${CPU_PARAMETERS}
-	-Wl,-Map=${CMAKE_PROJECT_NAME}.map
-	--specs=nosys.specs
-	#-u _printf_float                # STDIO float formatting support
-	-Wl,--start-group
-	-lc
-	-lm
-	-lstdc++
-	-lsupc++
-	-Wl,--end-group
-	-Wl,--print-memory-usage
+set(linker_script               ${CMAKE_CURRENT_LIST_DIR}/linker.ld)
+set(linker_flags 
+	LINKER:-gc-sections				#enable garbage collection
+	LINKER:-Map=${target_name}.map	#generate map file
+	LINKER:--print-memory-usage
+	-T${linker_script}				#use the defined linker script
+	--specs=nosys.specs				#use nonsys.specs that disables standards systems libraries and startup files
+)
+target_link_options(${target_name} PRIVATE
+	${linker_flags}
 )
 
-# Execute post-build to print size
-add_custom_command(TARGET ${EXECUTABLE} POST_BUILD
-	COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${EXECUTABLE}>
+#execute post-build to print size
+add_custom_command(TARGET ${target_name} POST_BUILD
+	COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${target_name}>
 )
 
-# Convert output to hex and binary
-add_custom_command(TARGET ${EXECUTABLE} POST_BUILD
-	COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${EXECUTABLE}> ${EXECUTABLE}.hex
+#convert output to hex
+add_custom_command(TARGET ${target_name} POST_BUILD
+	COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${target_name}> ${target_name}.hex
 )
 
-# Convert to bin file -> add conditional check?
-add_custom_command(TARGET ${EXECUTABLE} POST_BUILD
-	COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${EXECUTABLE}> ${EXECUTABLE}.bin
+#convert to bin
+add_custom_command(TARGET ${target_name} POST_BUILD
+	COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${target_name}> ${target_name}.bin
 )
