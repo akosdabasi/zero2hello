@@ -14,10 +14,6 @@ enable_language(C ASM)
 set(CMAKE_C_STANDARD                11)
 set(CMAKE_C_STANDARD_REQUIRED       ON)
 
-
-#toolchain specification
-set(CMAKE_TOOLCHAIN_FILE		gcc-arm-none-eabi)
-
 #target specification
 set(target_name                 ${CMAKE_PROJECT_NAME})
 include(source_list)
