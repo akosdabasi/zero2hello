@@ -2,7 +2,7 @@
 
 IRQn_t exti_line_to_irqn(exti_line_t line)
 {
-  IRQn_t result;
+  IRQn_t result = UNDEFINED_IRQn;
   switch (line)
   {
   case line0: result = EXTI0_IRQn; break;

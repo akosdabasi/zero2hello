@@ -1,18 +1,16 @@
 #!/bin/bash
 
-# Define the directory containing the toolchain file
-TOOLCHAIN_FILE="gcc-arm-none-eabi"
-
-./clean_cmake.sh
+build_type=${1,,:-"debug"}
+echo "generating build system for $build_type"
 
 # Define the build directory
 BUILD_DIR="./build"
 
 # Create the build directory if it doesn't exist
-mkdir -p $BUILD_DIR
+# mkdir -p $BUILD_DIR
 
-# Run cmake with the toolchain file
-cmake -S . -B $BUILD_DIR -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE -G "Unix Makefiles"
+# Run cmake with the appropriate preset (source dir is the current directory)
+cmake --preset $build_type
 
 # Optionally, you can also invoke make or another build tool after configuring
-cmake --build $BUILD_DIR
+cmake --build --preset $build_type
