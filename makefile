@@ -13,7 +13,7 @@ SPEED = 4000                    # Speed in kHz
 ## Path and filename definitions
 NAME = hello
 
-BUILD_DIR = build
+BUILD_DIR = build_make
 OBJ_DIR = $(BUILD_DIR)/obj/
 BIN_DIR = $(BUILD_DIR)/bin/
 SCRIPT_DIR = scripts
@@ -144,7 +144,7 @@ stflash: $(BIN)
 # flashing if the programmer runs jlink firmware
 jflash: flash_script.jlink
 	@echo "flashing with jlink..."
-	JLinkExe -CommanderScript flash_script.jlink
+	JLink -CommanderScript flash_script.jlink
 
 # Create the J-Link script file
 flash_script.jlink: $(BIN)
