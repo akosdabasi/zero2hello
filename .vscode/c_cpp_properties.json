@@ -6,8 +6,7 @@
       "includePath": [
         "${workspaceFolder}/**",
         "${workspaceFolder}/drivers/inc",
-        "${workspaceFolder}/snippets/inc",
-        "${workspaceFolder}/inc"
+        "${workspaceFolder}/utilities/inc"
       ],
       "cStandard": "${default}",
       "cppStandard": "${default}",

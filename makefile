@@ -21,8 +21,8 @@ SCRIPT_DIR = scripts
 ELF = $(BIN_DIR)$(NAME).elf
 BIN = $(BIN_DIR)$(NAME).bin
 
-CODE_DIRS= ./user_app/src/ ./drivers/src/ ./modules/src/ ./drivers/core/src/ ./snippets/src/ ./stdlib/src/
-INC_DIRS= ./user_app/inc/ ./drivers/inc/ ./modules/inc/ ./drivers/core/inc/ ./snippets/inc/ ./stdlib/inc/
+CODE_DIRS= ./user_app/src/ ./drivers/src/ ./modules/src/ ./drivers/core/src/ ./utilities/src/ ./stdlib/src/
+INC_DIRS= ./user_app/inc/ ./drivers/inc/ ./modules/inc/ ./drivers/core/inc/ ./utilities/inc/ ./stdlib/inc/
 
 ## Compiler and linker settings
 # toolchain
@@ -114,7 +114,7 @@ $(ELF): $(OBJ_FILES)
 $(OBJ_DIR)%.o:drivers/src/%.c
 	$(CC) $(CFLAGS) $< -o $@ 
 
-$(OBJ_DIR)%.o:snippets/src/%.c
+$(OBJ_DIR)%.o:utilities/src/%.c
 	$(CC) $(CFLAGS) $< -o $@ 
 
 $(OBJ_DIR)%.o:modules/src/%.c

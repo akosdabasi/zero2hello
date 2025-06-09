@@ -7,8 +7,6 @@
 #include "spi_driver.h"
 #include "usart_driver.h"
 
-#include "user_snippets.h"
-
 /*----------------- TIMING -------------------*/
 void delay_blocking_ms(uint32_t delay_ms);
 
