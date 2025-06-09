@@ -4,9 +4,7 @@
       "name": "windows-gcc-arm64",
       "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe",
       "includePath": [
-        "${workspaceFolder}/**",
-        "${workspaceFolder}/drivers/inc",
-        "${workspaceFolder}/utilities/inc"
+        "${workspaceFolder}/**/inc"
       ],
       "cStandard": "${default}",
       "cppStandard": "${default}",
