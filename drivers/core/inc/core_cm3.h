@@ -1,9 +1,10 @@
 #pragma once
 
 /*
-* file: this is a stripped version of the cmsis library file: core_cm3.h
+* file: this is a stripped down version of the cmsis library file: core_cm3.h
 * description: low level abastraction layer for Cortex M3 core and peripheral registers.
 * contains: 
+*     - core register definitions
 *     - peripheral configuration structures
 *     - register bit masks and positions
 *     - memory map base addresses
@@ -13,20 +14,44 @@
 #include "utils.h"
 
 // constants
-
 #define VECTKEY   0xFA05u
+
 /*******************************************************************************
 *                 Register Abstraction
 * Registers contain:
-*  - Core Registers
+*  - Core Registers: R0-R12, SP, LR, PC, PSR, PRIMASK, FAULTMASK, BASEPRIO, CONTROL
 *  - Core NVIC Registers
 *  - Core SCB Registers
 *  - Core SysTick Registers
  ******************************************************************************/
 
 /*Start of Core Register Definitions*/
+/*
+R0-R12: general purpose registers
+SP: Stack Pointer (MSP or PSP)
+LR: Link Register
+  - function calls: stores the return address 
+    1. BL --> branches to given address and stores next instruction in LR
+    2. BX LR --> returns from function to the address in LR
+  - exception handling: the CPU stores |R0-R3, R12, LR, PC, PSR| on stack and puts a special code in LR:
+    0xFFFFFFF9: Return to thread mode using MSP
+    0xFFFFFFFD: Return to thread mode using PSP
+    0xFFFFFFF1: Return to handler mode
+    1. Exception entry
+    2. BX LR --> returns from ISR and the CPU will recognice the special code in LR and restore the execution context from the stack
+PC: Program Counter
+PRIMASK:    disable configurable priority exceptions
+FAULTMASK:  disable all exceptions (excpet for NMI and HardFault)
+BASEPRIO:   mask exceptions based on priority level
+CONTROL: see below
+PSR: see below
+*/
 
-//Program Status Registers (xPSR).
+//Program Status Registers (xPSR)
+/*
+It's 3 mutually exclusive registers in one: APSR(Application), IPSR(Interrupt), EPSR(Execution)
+They can be accessed individually or together: PSR, IEPSR, APSR...
+*/
 typedef union
 {
   struct
@@ -47,35 +72,57 @@ typedef union
 } xPSR_t;
 
 //xPSR register defintions
+//APSR: Application Program Status Register
+//Negative: Just looks at the sign bit(31st bit), meaningless when working with unsigned numbers
 #define xPSR_N_Pos                         31U                                            
 #define xPSR_N_Msk                         (1UL << xPSR_N_Pos)                            
 
+//Zero
 #define xPSR_Z_Pos                         30U                                            
 #define xPSR_Z_Msk                         (1UL << xPSR_Z_Pos)                            
 
+//Carry: unsigned addition: result doesnt fit in 32bits
 #define xPSR_C_Pos                         29U                                            
 #define xPSR_C_Msk                         (1UL << xPSR_C_Pos)                            
 
+//Overflow: signed addition: ++ = - or -- = +
 #define xPSR_V_Pos                         28U                                            
 #define xPSR_V_Msk                         (1UL << xPSR_V_Pos)                            
 
+//Saturation: result of special instructions: SSAT, USAT
 #define xPSR_Q_Pos                         27U                                            
 #define xPSR_Q_Msk                         (1UL << xPSR_Q_Pos)                            
 
+//EPSR: Execution Program Status Register
+//Used by some special instructions
 #define xPSR_ICI_IT_2_Pos                  25U                                            
 #define xPSR_ICI_IT_2_Msk                  (3UL << xPSR_ICI_IT_2_Pos)                     
 
+//Thumb bit: has to be 1. It is set when the PC register is loaded with a branch instruction: BX, BLX, BX LR, POP{PC}
+//Thumb bit will be bit0 of the address we branch to, but bit 0 will be cleared before loading it to PC.
 #define xPSR_T_Pos                         24U                                            
 #define xPSR_T_Msk                         (1UL << xPSR_T_Pos)                            
 
 #define xPSR_ICI_IT_1_Pos                  10U                                            
 #define xPSR_ICI_IT_1_Msk                  (0x3FUL << xPSR_ICI_IT_1_Pos)                  
 
+//Contains the current exception number. In thread mode it is set to 0.
 #define xPSR_ISR_Pos                        0U                                            
 #define xPSR_ISR_Msk                       (0x1FFUL << xPSR_ISR_Pos)                  
 
 
-//Control Register (CONTROL).
+//Control Register (CONTROL)
+/*
+The processor can:
+          - run in Thread mode or Handler mode.
+          - use the Main Stack(MSP) or the Process Stack(PSP).
+          - execute code in privileged or unprivileged mode. 
+
+Handler mode: privileged with MSP
+Thread mode: depends on nPRIV and SPSEL
+
+Some registers and instructions are only accessible in privileged mode. 
+*/
 typedef union
 {
   struct
