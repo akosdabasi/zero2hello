@@ -178,6 +178,7 @@ typedef struct
 /*End of NVIC Register Definitions*/
 
 /*Start of System Control Block register definiton*/
+/*TODO: Some register definitions are missing*/
 
 typedef struct
 {
@@ -198,7 +199,7 @@ typedef struct
   __IO uint32_t AFSR;                   /*!< Offset: 0x040 (R/W)  Auxiliary Fault Status Register */
 } SCB_t;
 
-/* SCB CPUID Register Definitions */
+/* SCB CPUID Register Definitions - gives processor version information*/
 #define SCB_CPUID_IMPLEMENTER_Pos          24U                                            
 #define SCB_CPUID_IMPLEMENTER_Msk          (0xFFUL << SCB_CPUID_IMPLEMENTER_Pos)          
 
@@ -215,6 +216,10 @@ typedef struct
 #define SCB_CPUID_REVISION_Msk             (0xFUL << SCB_CPUID_REVISION_Pos)          
 
 /* SCB Interrupt Control State Register Definitions */
+/*
+Can be used to pend: NMI, PendSV and SysTick 
+Can be used to get information about active, pending and preempted exceptions
+*/
 #define SCB_ICSR_NMIPENDSET_Pos            31U                                            
 #define SCB_ICSR_NMIPENDSET_Msk            (1UL << SCB_ICSR_NMIPENDSET_Pos)               
 
@@ -250,6 +255,10 @@ typedef struct
 #define SCB_VTOR_TBLOFF_Msk                (0x1FFFFFFUL << SCB_VTOR_TBLOFF_Pos)           
 
 /* SCB Application Interrupt and Reset Control Register Definitions */
+/*
+Can be used to set the priority grouping. (the rest is implementation defined)
+Write is only valid with the correct VECTKEY and bit[0-1] set to 0. 
+*/
 #define SCB_AIRCR_VECTKEY_Pos              16U                                            
 #define SCB_AIRCR_VECTKEY_Msk              (0xFFFFUL << SCB_AIRCR_VECTKEY_Pos)            
 
@@ -272,6 +281,12 @@ typedef struct
 #define SCB_AIRCR_VECTRESET_Msk            (1UL /<< SCB_AIRCR_VECTRESET_Pos)           
 
 /* SCB System Control Register Definitions */
+/*
+Can be used to control low-power modes. 
+SEVONPEND: If set to 1, even disabled interrupts can wake up the processor from WFE
+SLEEPDEEP: Controls if the processor uses sleep or deep sleep as its low power mode
+SLEEPONEXIT: For interrupt-driven applications
+*/
 #define SCB_SCR_SEVONPEND_Pos               4U                                            
 #define SCB_SCR_SEVONPEND_Msk              (1UL << SCB_SCR_SEVONPEND_Pos)                 
 
@@ -282,6 +297,11 @@ typedef struct
 #define SCB_SCR_SLEEPONEXIT_Msk            (1UL << SCB_SCR_SLEEPONEXIT_Pos)               
 
 /* SCB Configuration Control Register Definitions */
+/*
+Controls how the processor handles: divide by 0, unaligned access
+Can enable unprivileged SW to access STIR 
+TODO: understanding the rest 
+*/
 #define SCB_CCR_STKALIGN_Pos                9U                                            
 #define SCB_CCR_STKALIGN_Msk               (1UL << SCB_CCR_STKALIGN_Pos)                  
 
@@ -301,6 +321,13 @@ typedef struct
 #define SCB_CCR_NONBASETHRDENA_Msk         (1UL << SCB_CCR_NONBASETHRDENA_Pos)        
 
 /* SCB System Handler Control and State Register Definitions */
+/*
+Can be used to:
+  - enable/disable system handlers (BusFault, UsageFault, MemManage)
+  - check if system handlers are pending (BusFault, UsageFault, MemManage, SVCall)
+  - check if system handlers are active (SysTick, PendSV, UsageFault, BusFault, MemManage)
+  - check if debug monitor is active: debug monitor is an ISR that runs at debug events
+*/
 #define SCB_SHCSR_USGFAULTENA_Pos          18U                                            
 #define SCB_SHCSR_USGFAULTENA_Msk          (1UL << SCB_SHCSR_USGFAULTENA_Pos)             
 
@@ -344,6 +371,9 @@ typedef struct
 #define SCB_SHCSR_MEMFAULTACT_Msk          (1UL << SCB_SHCSR_MEMFAULTACT_Pos)         
 
 /* SCB Configurable Fault Status Register Definitions */
+/*
+Indicates the cause of MemManage, Usage and Bus-Faults
+*/
 #define SCB_CFSR_USGFAULTSR_Pos            16U                                            
 #define SCB_CFSR_USGFAULTSR_Msk            (0xFFFFUL << SCB_CFSR_USGFAULTSR_Pos)          
 
