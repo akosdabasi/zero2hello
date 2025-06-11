@@ -148,6 +148,10 @@ typedef union
 #define NPRIV_UNPRIV  1u   //unprivileged access level
 
 /*End of Core Register Definitions */
+
+
+
+
 /*Start of NVIC Register Definitions*/
 
 typedef struct
@@ -172,6 +176,7 @@ typedef struct
 #define NVIC_STIR_INTID_Msk                (0x1FFUL << NVIC_STIR_INTID_Pos)        
 
 /*End of NVIC Register Definitions*/
+
 /*Start of System Control Block register definiton*/
 
 typedef struct
@@ -530,6 +535,42 @@ typedef struct
 // Disable Interrupts (CPSID I): Disables all maskable interrupts. (sets the PRIMASK regsiter)
 #define __DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
+// Enable Fault Handling (CPSIE F): Enables all exceptions except NMI and HardFault (clears the FAULTMASK register)
+#define __ENABLE_FAULTS() __asm volatile ("cpsie f")
+
+// Disable Fault Handling (CPSID F): Disables all exceptions except NMI and HardFault (sets the FAULTMASK register)
+#define __DISABLE_FAULTS() __asm volatile ("cpsid f")
+
+// Reverses byte order to switch between little-endien and big-endien
+static inline uint32_t __reverse_byte_order(uint32_t value) 
+{
+    uint32_t result;
+    __asm volatile ("rev %0, %1" : "=r"(result) : "r"(value));
+    return result;
+}
+
+// Reverses byte order per word
+static inline uint32_t __reverse_byte_order_w(uint32_t value) 
+{
+    uint32_t result;
+    __asm volatile ("rev16 %0, %1" : "=r"(result) : "r"(value));
+    return result;
+}
+
+static inline int32_t __reverse_byte_order_sh(int32_t value) 
+{
+    int32_t result;
+    __asm volatile ("revsh %0, %1" : "=r"(result) : "r"(value));
+    return result;
+}
+
+static inline uint32_t __reverse_bit_order(uint32_t value)
+{
+    uint32_t result;
+    __asm volatile ("rbit %0, %1" : "=r"(result) : "r"(value));
+    return result;
+}
+
 // Set Priority Mask (MSR PRIMASK): Disables all configurable exceptions.
 static inline void __set_specreg_primask(uint32_t value) 
 {
@@ -580,6 +621,33 @@ static inline uint32_t __get_specreg_control(void)
 {
     uint32_t result;
     __asm volatile ("mrs %0, control" : "=r"(result));
+    return result;
+}
+
+
+// Set Process Stack Pointer (MSR PSP)
+static inline __attribute__((always_inline)) void __set_specreg_psp(uint32_t value) 
+{
+    __asm volatile ("msr psp, %0" : : "r"(value) : "memory");
+}
+// Get Process Stack Pointer (MRS PSP)
+static inline __attribute__((always_inline)) uint32_t __get_specreg_psp(void)
+{
+    uint32_t result;
+    __asm volatile ("mrs %0, psp" : "=r"(result));
+    return result;
+}
+
+// Set Main Stack Pointer (MSR MSP)
+static inline __attribute__((always_inline)) void __set_specreg_msp(uint32_t value) 
+{
+    __asm volatile ("msr msp, %0" : : "r"(value) : "memory");
+}
+// Get Main Stack Pointer (MRS MSP)
+static inline __attribute__((always_inline)) uint32_t __get_specreg_msp(void)
+{
+    uint32_t result;
+    __asm volatile ("mrs %0, msp" : "=r"(result));
     return result;
 }
 
