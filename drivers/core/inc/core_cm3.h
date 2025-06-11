@@ -524,48 +524,87 @@ typedef struct
 // Yield (YIELD): Hints the processor to switch to another task or core.
 #define __YIELD() __asm volatile ("yield")
 
-// Enable Interrupts (CPSIE I): Enables all maskable interrupts.
+// Enable Interrupts (CPSIE I): Enables all maskable interrupts. (clears the PRIMASK register)
 #define __ENABLE_INTERRUPTS() __asm volatile ("cpsie i")
 
-// Disable Interrupts (CPSID I): Disables all maskable interrupts.
+// Disable Interrupts (CPSID I): Disables all maskable interrupts. (sets the PRIMASK regsiter)
 #define __DISABLE_INTERRUPTS() __asm volatile ("cpsid i")
 
 // Set Priority Mask (MSR PRIMASK): Disables all configurable exceptions.
-#define __SET_PRIMASK(value) __asm volatile ("msr primask, %0" : : "r"(value))
-
+static inline void __set_specreg_primask(uint32_t value) 
+{
+    __asm volatile ("msr primask, %0" : : "r"(value) : "memory");
+}
 // Get Priority Mask (MRS PRIMASK): Gets the current PRIMASK value to check if interrupts are masked.
-#define __GET_PRIMASK() ({ \
-    uint32_t primask; \
-    __asm volatile ("mrs %0, primask" : "=r"(primask) ); \
-    primask; \
-})
+static inline uint32_t __get_specreg_primask(void) 
+{
+    uint32_t result;
+    __asm volatile ("mrs %0, primask" : "=r"(result));
+    return result;
+}
 
 // Set Base Priority (MSR BASEPRI): Sets the base priority register to control exception priority.
-#define __SET_BASEPRI(value) __asm volatile ("msr basepri, %0" : : "r"(value))
-
+static inline void __set_specreg_basepri(uint32_t value)
+{
+    __asm volatile ("msr basepri, %0" : : "r"(value) : "memory");
+}
 // Get Base Priority (MRS BASEPRI): Reads the current base priority value.
-#define __GET_BASEPRI() ({ \
-    uint32_t basepri; \
-    __asm volatile ("mrs %0, basepri" : "=r"(basepri) ); \
-    basepri; \
-})
+static inline uint32_t __get_specreg_basepri(void) 
+{
+    uint32_t result;
+    __asm volatile ("mrs %0, basepri" : "=r"(result));
+    return result;
+}
+
 
 // Set Fault Mask (MSR FAULTMASK): Disables all exceptions except NMI and HardFault.
-#define __SET_FAULTMASK(value) __asm volatile ("msr faultmask, %0" : : "r"(value))
-
+static inline void __set_specreg_faultmask(uint32_t value) 
+{
+    __asm volatile ("msr faultmask, %0" : : "r"(value) : "memory");
+}
 // Get Fault Mask (MRS FAULTMASK): Reads the current fault mask value.
-#define __GET_FAULTMASK() ({ \
-    uint32_t faultmask; \
-    __asm volatile ("mrs %0, faultmask" : "=r"(faultmask) ); \
-    faultmask; \
-})
+static inline uint32_t __get_specreg_faultmask(void) 
+{
+    uint32_t result;
+    __asm volatile ("mrs %0, faultmask" : "=r"(result));
+    return result;
+}
+
 
 // Set Control Register (MSR CONTROL): Sets the CONTROL register, which controls privilege level and stack mode.
-#define __SET_CONTROL(value) __asm volatile ("msr control, %0" : : "r"(value))
-
+static inline void __set_specreg_control(uint32_t value) {
+  __asm volatile ("msr control, %0" : : "r"(value) : "memory");
+}
 // Get Control Register (MRS CONTROL): Reads the current CONTROL register value.
-#define __GET_CONTROL() ({ \
-    uint32_t control; \
-    __asm volatile ("mrs %0, control" : "=r"(control) ); \
-    control; \
-})
+static inline uint32_t __get_specreg_control(void) 
+{
+    uint32_t result;
+    __asm volatile ("mrs %0, control" : "=r"(result));
+    return result;
+}
+
+// Functions to change the active Stack Pointer
+static inline __attribute__((always_inline)) void __switch_to_psp(void) 
+{
+    __asm volatile (
+        "mrs r0, control      \n" // Read CONTROL
+        "orr r0, r0, #2       \n" // Set bit 1 (SPSEL = 1 → use PSP)
+        "msr control, r0      \n" // Write back
+        "isb                  \n" // Instruction sync barrier
+        :
+        :
+        : "r0", "memory"
+    );
+}
+static inline __attribute__((always_inline)) void __switch_to_msp(void) 
+{
+    __asm volatile (
+        "mrs r0, control      \n"
+        "bic r0, r0, #2       \n" // Clear bit 1 (SPSEL = 0 → use MSP)
+        "msr control, r0      \n"
+        "isb                  \n"
+        :
+        :
+        : "r0", "memory"
+    );
+}
